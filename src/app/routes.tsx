@@ -1,6 +1,7 @@
 import { ClipboardList } from 'lucide-react';
 import type { RouteObject } from 'react-router';
 import type { Repositories } from '@/data';
+import { HistoryContainer } from '@/features/history';
 import { OnboardingContainer } from '@/features/onboarding';
 import { ProfileContainer } from '@/features/profile';
 import { SettingsContainer } from '@/features/settings';
