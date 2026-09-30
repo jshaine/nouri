@@ -20,4 +20,4 @@ data/raw/fnri/*
 .vscode/*
 !.vscode/extensions.json
 .idea/
-.claude/settings.local.json
+.claude/
