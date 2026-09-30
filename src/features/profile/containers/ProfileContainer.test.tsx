@@ -87,6 +87,21 @@ describe('ProfileContainer', () => {
     ]);
   });
 
+  it('blocks a goal weight below BMI 18.5 and names the lowest allowed', async () => {
+    const { repos } = createTestRepositories();
+    await repos.profile.update({ heightCm: 160 });
+    render(<ProfileContainer repos={repos} now={NOW} />);
+    await typeAndLeave(await screen.findByLabelText('Goal weight').then(() => 'Goal weight'), '45');
+    expect(screen.getByLabelText('Goal weight')).toHaveAccessibleDescription(
+      'The lowest goal weight for your height is 47.4 kg (a BMI of 18.5).',
+    );
+    expect((await repos.profile.get()).goalWeightKg).toBeUndefined();
+    await typeAndLeave('Goal weight', '47.4');
+    await waitFor(async () => {
+      expect((await repos.profile.get()).goalWeightKg).toBe(47.4);
+    });
+  });
+
   it('asks for a weight before offering paces', async () => {
     setup();
     expect(await screen.findByLabelText('Weekly goal')).toHaveAccessibleDescription(

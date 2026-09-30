@@ -2,7 +2,9 @@ import { useState } from 'react';
 import type { ProfileRepository } from '@/data';
 import {
   cmToFeetInches,
+  formatWeight,
   kgToLb,
+  minimumGoalWeightKg,
   parseBirthDate,
   parseBodyWeight,
   parseHeight,
@@ -74,6 +76,16 @@ export function useProfileForm(
         const r = parseBodyWeight(profile.units, drafts.goalWeight);
         fail(field, r.ok ? undefined : r.error);
         if (!r.ok) return;
+        // Goals below a healthy weight (BMI 18.5) aren't planned for.
+        const min =
+          profile.heightCm === undefined ? undefined : minimumGoalWeightKg(profile.heightCm);
+        if (min !== undefined && r.value < min) {
+          fail(
+            field,
+            `The lowest goal weight for your height is ${formatWeight(min, profile.units)} (a BMI of 18.5).`,
+          );
+          return;
+        }
         const patch: Partial<Profile> = { goalWeightKg: r.value };
         // A pace that no longer fits the new goal falls back to maintain.
         if (
