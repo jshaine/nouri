@@ -9,3 +9,4 @@ export * from './numbers';
 export * from './nutrition';
 export * from './progress';
 export * from './theme';
+export * from './portionChoice';
