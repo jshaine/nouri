@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 async function waitForServiceWorkerControl(page: Page) {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Nouri' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
@@ -19,7 +19,7 @@ test('loads offline after the first visit', async ({ page, context, browserName 
 
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'Nouri' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
 });
 
 test('precaches the app shell', async ({ page }) => {
