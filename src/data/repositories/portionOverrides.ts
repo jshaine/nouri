@@ -3,7 +3,7 @@ import type { RepoContext } from '../context';
 import { live, type Live } from '../live';
 
 /**
- * Your own portions for any food (e.g. "1 cup kanin" = 160 g). Kept apart from
+ * Your own portions for any food (e.g. "1 cup rice" = 160 g). Kept apart from
  * the bundled foods, which are never modified.
  */
 export interface PortionOverrideRepository {

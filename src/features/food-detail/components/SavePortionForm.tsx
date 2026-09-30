@@ -15,7 +15,7 @@ export interface SavePortionFormProps {
   saveError?: string | undefined;
 }
 
-/** Name a portion (e.g. "1 cup kanin") and its weight, to reuse later. */
+/** Name a portion (e.g. "1 cup rice") and its weight, to reuse later. */
 export function SavePortionForm(props: SavePortionFormProps) {
   const { kind, errors, saving = false } = props;
   return (
@@ -23,7 +23,7 @@ export function SavePortionForm(props: SavePortionFormProps) {
       <legend className={styles.portionLegend}>Save a portion</legend>
       <TextField
         label="Portion name"
-        placeholder="1 cup kanin"
+        placeholder="1 cup rice"
         autoComplete="off"
         value={props.label}
         error={errors.label}
