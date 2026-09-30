@@ -1,0 +1,7 @@
+dist
+dev-dist
+coverage
+playwright-report
+test-results
+public/foods.json
+package-lock.json
