@@ -1,5 +1,12 @@
 import type { Food } from './food';
-import { defaultAmount, defaultChoice, optionForUnit, stepFor, unitOptions } from './portionChoice';
+import {
+  defaultAmount,
+  defaultChoice,
+  defaultPortionSummary,
+  optionForUnit,
+  stepFor,
+  unitOptions,
+} from './portionChoice';
 
 const rice: Food = {
   key: 'usda:1',
@@ -64,5 +71,24 @@ describe('defaults', () => {
   it('steps grams by 10 and portions by a half', () => {
     expect(stepFor({ kind: 'grams' })).toBe(10);
     expect(stepFor({ kind: 'portion', label: 'x' })).toBe(0.5);
+  });
+});
+
+describe('defaultPortionSummary', () => {
+  it('uses the first portion', () => {
+    const cooked: Food = {
+      ...rice,
+      nutrients: { kcal: 130, p: 2.7, c: 28, f: 0.3 },
+      portions: [{ label: '1 cup', grams: 158 }],
+    };
+    expect(defaultPortionSummary(cooked)).toEqual({ kcal: 205, portion: '1 cup (158 g)' });
+  });
+
+  it('falls back to 100 g', () => {
+    expect(defaultPortionSummary(plain)).toEqual({ kcal: 126, portion: '100 g' }); // 4P + 4C + 9F
+  });
+
+  it('describes a serving of unknown weight', () => {
+    expect(defaultPortionSummary(adobo)).toEqual({ kcal: 126, portion: '1 serving' });
   });
 });

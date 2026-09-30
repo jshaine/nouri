@@ -1,4 +1,5 @@
 import { availablePortions, supportsGrams, type EntryUnit, type Food, type Portion } from './food';
+import { nutrientsFor } from './nutrition';
 
 /** One choice in the portion picker. `id` is stable for form controls. */
 export interface UnitOption {
@@ -63,4 +64,17 @@ export function defaultAmount(food: Food, unit: EntryUnit): number {
 
 export function stepFor(unit: EntryUnit): number {
   return unit.kind === 'grams' ? GRAM_STEP : PORTION_STEP;
+}
+
+/** What a search result shows: calories for the default portion, e.g. "205 kcal · 1 cup (158 g)". */
+export function defaultPortionSummary(
+  food: Food,
+  overrides: readonly Portion[] = [],
+): { kcal: number; portion: string } {
+  const { unit, amount } = defaultChoice(food, overrides);
+  const option = optionForUnit(unitOptions(food, overrides), unit);
+  const portions = availablePortions(food, overrides);
+  const kcal = Math.round(nutrientsFor(food, portions, amount, unit).kcal);
+  const portion = unit.kind === 'grams' ? `${amount} g` : (option?.label ?? unit.label);
+  return { kcal, portion };
 }

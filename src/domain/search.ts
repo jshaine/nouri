@@ -40,7 +40,10 @@ export function createFoodSearch(foods: readonly Food[]): FoodSearch {
     searchOptions: {
       combineWith: 'AND',
       prefix: true,
-      fuzzy: (term) => (term.length > 3 ? 0.2 : false),
+      // Two edits from 5 letters (covers swapped letters like "itlgo"), one at 4.
+      fuzzy: (term) => (term.length >= 5 ? 0.4 : term.length === 4 ? 0.25 : false),
+      // Exact and prefix hits outrank fuzzy ones, so typo tolerance only fills in.
+      weights: { fuzzy: 0.1, prefix: 0.5 },
       boost: { name: 1, aliases: 2 },
       boostDocument: (id, term) => {
         const food = byKey.get(String(id));
