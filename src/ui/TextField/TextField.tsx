@@ -1,35 +1,28 @@
 import { useId, type InputHTMLAttributes } from 'react';
 import styles from '../Field/Field.module.css';
 
-export interface NumberFieldProps extends Omit<
+export interface TextFieldProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
-  'value' | 'onChange' | 'type' | 'inputMode'
+  'value' | 'onChange'
 > {
   label: string;
-  /** Raw text, so partial input like "1." survives while typing. */
   value: string;
   onChange: (value: string) => void;
-  /** Unit shown after the input, e.g. "g" or "kcal". */
-  unit?: string;
-  /** "decimal" for amounts, "numeric" for whole numbers. */
-  inputMode?: 'decimal' | 'numeric';
   hint?: string;
   error?: string;
 }
 
-/** Labeled number input that opens the numeric keypad on phones. */
-export function NumberField({
+/** Labeled text input with hint and error text linked for screen readers. */
+export function TextField({
   label,
   value,
   onChange,
-  unit,
-  inputMode = 'decimal',
   hint,
   error,
   id,
   className,
   ...rest
-}: NumberFieldProps) {
+}: TextFieldProps) {
   const autoId = useId();
   const inputId = id ?? autoId;
   const hintId = `${inputId}-hint`;
@@ -46,9 +39,6 @@ export function NumberField({
           id={inputId}
           className={styles.input}
           type="text"
-          inputMode={inputMode}
-          autoComplete="off"
-          enterKeyHint="done"
           value={value}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
@@ -57,11 +47,6 @@ export function NumberField({
           }}
           {...rest}
         />
-        {unit && (
-          <span className={styles.unit} aria-hidden="true">
-            {unit}
-          </span>
-        )}
       </div>
       {hint && (
         <p id={hintId} className={styles.hint}>
