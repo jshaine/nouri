@@ -66,5 +66,11 @@ export function useCustomFoodForm({ repo, editing, onSaved, suggestedName }: Opt
     }
   };
 
-  return { value, errors, saving, saveError, onChange, onSubmit };
+  /** Fill the facts from a reference food; a name already typed is kept. */
+  const fillFrom = (input: CustomFoodInput) => {
+    setValue((v) => ({ ...input, name: v.name.trim() ? v.name : input.name }));
+    setErrors({});
+  };
+
+  return { value, errors, saving, saveError, onChange, onSubmit, fillFrom };
 }
