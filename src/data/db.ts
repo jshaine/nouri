@@ -32,7 +32,9 @@ export class NouriDb extends Dexie {
   meta!: EntityTable<MetaRow, 'key'>;
 
   constructor(name: string = DB_NAME) {
-    super(name);
+    // Your log's only copy is on this device: ask Chrome to flush each write to
+    // disk before reporting it done, rather than its faster "relaxed" default.
+    super(name, { chromeTransactionDurability: 'strict' });
     // Only indexed fields are listed; rows may hold more.
     this.version(1).stores({
       customFoods: 'id, name, updatedAt',
