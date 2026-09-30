@@ -23,7 +23,8 @@ export function rowToProfile(row: ProfileRow | undefined): Profile {
   if (!row) return { ...DEFAULT_PROFILE };
   const p: Profile = {
     units: row.units === 'imperial' ? 'imperial' : 'metric',
-    exerciseCaloriesEnabled: row.exerciseCaloriesEnabled === true,
+    // Rows can come from imports, so check the actual value, not the type.
+    exerciseCaloriesEnabled: (row.exerciseCaloriesEnabled as unknown) === true,
   };
   if (row.sex === 'male' || row.sex === 'female') p.sex = row.sex;
   if (isLocalDate(row.birthDate)) p.birthDate = row.birthDate;
