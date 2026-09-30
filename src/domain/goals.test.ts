@@ -1,5 +1,12 @@
 import type { LocalDate } from './dates';
-import { goalForDate, goalFromGrams, gramsFromPercents, isValidPercents, scaleGoal } from './goals';
+import {
+  goalForDate,
+  goalFromGrams,
+  goalWithExercise,
+  gramsFromPercents,
+  isValidPercents,
+  scaleGoal,
+} from './goals';
 
 const rec = (id: string, effectiveFrom: string) => ({
   id,
@@ -71,5 +78,21 @@ describe('gram goals', () => {
       f: 77,
     });
     expect(scaleGoal({ kcal: 0, p: 0, c: 0, f: 0 }, 300)).toEqual({ kcal: 300, p: 0, c: 0, f: 0 });
+  });
+});
+
+describe('goalWithExercise', () => {
+  it('adds exercise calories and scales the macros', () => {
+    expect(goalWithExercise({ kcal: 2000, p: 100, c: 250, f: 67 }, 300)).toEqual({
+      kcal: 2300,
+      p: 115,
+      c: 288,
+      f: 77,
+    });
+  });
+
+  it('leaves the goal alone without exercise', () => {
+    const g = { kcal: 2000, p: 100, c: 250, f: 67 };
+    expect(goalWithExercise(g, 0)).toBe(g);
   });
 });

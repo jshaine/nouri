@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { GoalRepository, SettingsRepository } from '@/data';
+import type { GoalRepository, ProfileRepository, SettingsRepository } from '@/data';
 import { THEME_PREFERENCES, type ThemePreference } from '@/domain';
 import { GoalsContainer } from '@/features/goals';
 import { SegmentedControl, useDocumentTitle, useLive } from '@/ui';
@@ -13,11 +13,16 @@ const THEME_LABEL: Record<ThemePreference, string> = {
   dark: 'Dark',
 };
 const THEME_OPTIONS = THEME_PREFERENCES.map((t) => ({ value: t, label: THEME_LABEL[t] }));
+const EXERCISE_OPTIONS = [
+  { value: 'off', label: 'Off' },
+  { value: 'on', label: 'On' },
+] as const;
 
 export interface SettingsContainerProps {
   repos: {
     goals: Pick<GoalRepository, 'live' | 'setFrom'>;
     settings: Pick<SettingsRepository, 'live' | 'set'>;
+    profile: Pick<ProfileRepository, 'live' | 'update'>;
   };
   now?: () => Date;
   version?: string;
@@ -31,6 +36,8 @@ export function SettingsContainer({
   useDocumentTitle('Settings');
   const settings = useLive(() => repos.settings.live(), [repos.settings]);
   const s = settings.value;
+  const profile = useLive(() => repos.profile.live(), [repos.profile]);
+  const [pendingExercise, setPendingExercise] = useState<boolean>();
   // Show the tapped theme at once; the saved value catches up via the live query.
   const [pendingTheme, setPendingTheme] = useState<ThemePreference>();
 
@@ -39,6 +46,25 @@ export function SettingsContainer({
       <h1 className={styles.heading}>Settings</h1>
       <SettingsSection title="Goals">
         <GoalsContainer repo={repos.goals} {...(now ? { now } : {})} />
+      </SettingsSection>
+      <SettingsSection title="Exercise calories">
+        {profile.value && (
+          <>
+            <SegmentedControl
+              label="Add exercise to the day’s goal"
+              options={EXERCISE_OPTIONS}
+              value={(pendingExercise ?? profile.value.exerciseCaloriesEnabled) ? 'on' : 'off'}
+              onChange={(v) => {
+                setPendingExercise(v === 'on');
+                void repos.profile.update({ exerciseCaloriesEnabled: v === 'on' });
+              }}
+            />
+            <p className={styles.meta}>
+              When on, Today gets an Exercise field and that day’s goal grows by the calories you
+              burned.
+            </p>
+          </>
+        )}
       </SettingsSection>
       <SettingsSection title="Appearance">
         {s && (

@@ -71,3 +71,8 @@ export function scaleGoal(goal: DailyGoal, kcal: number): DailyGoal {
   const k = kcal / goal.kcal;
   return { kcal, p: Math.round(goal.p * k), c: Math.round(goal.c * k), f: Math.round(goal.f * k) };
 }
+
+/** A day's goal with exercise calories added, macros scaled by the current split. */
+export function goalWithExercise(goal: DailyGoal, exerciseKcal: number): DailyGoal {
+  return exerciseKcal > 0 ? scaleGoal(goal, goal.kcal + exerciseKcal) : goal;
+}
