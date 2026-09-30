@@ -1,0 +1,46 @@
+.switcher {
+  display: grid;
+  grid-template-columns: var(--tap-min) minmax(0, 1fr) var(--tap-min);
+  align-items: center;
+}
+
+.picker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: var(--tap-min);
+  border-radius: var(--radius-md);
+}
+
+.picker:focus-within {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.label {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-black);
+  font-stretch: var(--stretch-condensed);
+}
+
+/* The native picker covers the label so a tap opens it. */
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Keep the grid aligned when "next" isn't available. */
+.hidden {
+  visibility: hidden;
+}
