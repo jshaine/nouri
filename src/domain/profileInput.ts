@@ -7,7 +7,8 @@ export const WEIGHT_KG_RANGE = [30, 300] as const;
 
 type Parsed = { ok: true; value: number } | { ok: false; error: string };
 
-const round1 = (n: number) => Math.round(n * 10) / 10;
+/** Stored to 0.01 so values typed in lb or ft/in round-trip exactly. */
+const round2 = (n: number) => Math.round(n * 100) / 100;
 
 /** Height from "160" (cm) or feet + inches, always returned in cm. */
 export function parseHeight(
@@ -32,7 +33,7 @@ export function parseHeight(
           : 'Enter your height in feet and inches, like 5 ft 4 in.',
     };
   }
-  return { ok: true, value: round1(cm) };
+  return { ok: true, value: round2(cm) };
 }
 
 /** A body weight typed in the user's units, returned in kg. */
@@ -46,7 +47,7 @@ export function parseBodyWeight(units: UnitSystem, text: string): Parsed {
       error: `Enter a weight in ${units === 'metric' ? 'kg, like 62.5' : 'lb, like 138'}.`,
     };
   }
-  return { ok: true, value: round1(kg) };
+  return { ok: true, value: round2(kg) };
 }
 
 export function parseBirthDate(
