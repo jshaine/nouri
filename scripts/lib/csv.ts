@@ -20,6 +20,11 @@ export class CsvParser {
     this.onRow = onRow;
   }
 
+  /** Column names from the header line (empty until it has been read). */
+  get columns(): readonly string[] {
+    return this.header ?? [];
+  }
+
   push(chunk: string): void {
     for (const ch of chunk) {
       if (this.inQuotes) {
@@ -85,10 +90,14 @@ export function parseCsv(text: string): Row[] {
   return rows;
 }
 
-/** Streams a CSV file, calling `onRow` for each record after the header. */
-export async function readCsvFile(path: string, onRow: (row: Row) => void): Promise<void> {
+/** Streams a CSV file, calling `onRow` for each record; resolves to the header columns. */
+export async function readCsvFile(
+  path: string,
+  onRow: (row: Row) => void,
+): Promise<readonly string[]> {
   const parser = new CsvParser(onRow);
   const stream = createReadStream(path, { encoding: 'utf8' });
   for await (const chunk of stream) parser.push(chunk as string);
   parser.end();
+  return parser.columns;
 }
