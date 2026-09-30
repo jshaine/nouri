@@ -5,7 +5,7 @@ import { summarizeWeek } from './history';
 
 const d = (s: string) => s as LocalDate;
 const entry = (date: string, kcal: number, p = 10): Entry => ({
-  id: date + kcal,
+  id: `${date}-${kcal}`,
   date: d(date),
   meal: 'lunch',
   foodKey: 'custom:a',
