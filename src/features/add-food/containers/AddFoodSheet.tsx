@@ -106,6 +106,7 @@ export function AddFoodSheet({
               key={formKey}
               repo={repos.customFoods}
               suggestedName={suggestedName}
+              reference={repos}
               onSaved={setSelected}
             />
           </div>
