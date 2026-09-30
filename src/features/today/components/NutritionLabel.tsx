@@ -17,12 +17,19 @@ const GRAMS = { protein: 'p', carbs: 'c', fat: 'f' } as const;
 export interface NutritionLabelProps {
   totals: MacroTotals;
   goal: DailyGoal | undefined;
+  /** Exercise kcal already included in the goal (shown next to it). */
+  exerciseKcal?: number;
   /** Shown when there is no goal yet, e.g. a "Set goals" link. */
   noGoalAction?: ReactNode;
 }
 
 /** The daily totals, drawn as a nutrition facts label. */
-export function NutritionLabel({ totals, goal, noGoalAction }: NutritionLabelProps) {
+export function NutritionLabel({
+  totals,
+  goal,
+  exerciseKcal = 0,
+  noGoalAction,
+}: NutritionLabelProps) {
   const titleId = useId();
   const kcal = goal ? goalProgress(totals.kcal, goal.kcal) : undefined;
   return (
@@ -38,7 +45,10 @@ export function NutritionLabel({ totals, goal, noGoalAction }: NutritionLabelPro
       <div className={styles.goalLine}>
         {goal && kcal ? (
           <>
-            <span>Goal {formatNumber(goal.kcal)}</span>
+            <span>
+              Goal {formatNumber(goal.kcal)}
+              {exerciseKcal > 0 && ` (incl. ${formatNumber(exerciseKcal)} exercise)`}
+            </span>
             <span>
               {kcal.over > 0
                 ? `${formatNumber(kcal.over)} over`

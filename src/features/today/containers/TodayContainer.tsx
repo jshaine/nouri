@@ -12,12 +12,21 @@ import { useLogActions } from '../hooks/useLogActions';
 import { useSelectedDate } from '../hooks/useSelectedDate';
 import { EntryEditorContainer } from './EntryEditorContainer';
 import { EntryRowContainer } from './EntryRowContainer';
+import { ExerciseContainer } from './ExerciseContainer';
 import styles from './TodayContainer.module.css';
 
 export interface TodayContainerProps {
   repos: Pick<
     Repositories,
-    'entries' | 'goals' | 'customFoods' | 'settings' | 'foods' | 'usage' | 'portionOverrides'
+    | 'entries'
+    | 'goals'
+    | 'customFoods'
+    | 'settings'
+    | 'foods'
+    | 'usage'
+    | 'portionOverrides'
+    | 'profile'
+    | 'exercise'
   >;
   now?: () => Date;
 }
@@ -50,12 +59,21 @@ export function TodayContainer({ repos, now = () => new Date() }: TodayContainer
       <NutritionLabel
         totals={day.totals}
         goal={day.goal}
+        exerciseKcal={day.exerciseKcal}
         noGoalAction={
           <Link to="/settings" className={styles.link}>
             Set goals
           </Link>
         }
       />
+      {day.exerciseEnabled && (
+        <ExerciseContainer
+          key={date + String(day.exerciseKcal)}
+          date={date}
+          saved={day.exerciseKcal}
+          repo={repos.exercise}
+        />
+      )}
       {day.loaded && day.entries.length === 0 ? (
         <EmptyState
           icon={ClipboardList}
