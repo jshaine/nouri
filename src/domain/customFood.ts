@@ -141,3 +141,19 @@ export function customFoodToFood(id: string, draft: CustomFoodDraft, portions?: 
     portions: portions ?? defaultPortions(draft.basis),
   };
 }
+
+/** The form text for editing an existing custom food. */
+export function foodToCustomFoodInput(food: Food): CustomFoodInput {
+  const text = (n: number | undefined) => (n === undefined ? '' : String(n));
+  return {
+    name: food.name,
+    aliases: food.aliases.join(', '),
+    basis: food.basis.kind,
+    servingGrams: food.basis.kind === 'serving' ? text(food.basis.servingGrams) : '',
+    kcal: text(food.nutrients.kcal),
+    p: text(food.nutrients.p),
+    c: text(food.nutrients.c),
+    f: text(food.nutrients.f),
+    fiber: text(food.nutrients.fiber),
+  };
+}

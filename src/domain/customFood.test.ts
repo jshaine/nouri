@@ -2,6 +2,7 @@ import {
   customFoodToFood,
   defaultPortions,
   EMPTY_CUSTOM_FOOD,
+  foodToCustomFoodInput,
   validateCustomFood,
   type CustomFoodInput,
 } from './customFood';
@@ -128,6 +129,32 @@ describe('custom food to Food', () => {
       p: 28,
       c: 4,
       f: 18,
+    });
+  });
+});
+
+describe('foodToCustomFoodInput', () => {
+  it('round-trips through validation', () => {
+    const original = input({
+      basis: 'serving',
+      servingGrams: '180',
+      aliases: 'adobo, manok',
+      kcal: '300',
+      fiber: '1',
+    });
+    const food = customFoodToFood('x', valueOf(original));
+    const back = foodToCustomFoodInput(food);
+    expect(back).toEqual({ ...original, aliases: 'adobo, manok' });
+    expect(valueOf(back)).toEqual(valueOf(original));
+  });
+
+  it('leaves optional fields empty', () => {
+    const food = customFoodToFood('x', valueOf(input({})));
+    expect(foodToCustomFoodInput(food)).toMatchObject({
+      basis: '100g',
+      servingGrams: '',
+      kcal: '',
+      fiber: '',
     });
   });
 });
