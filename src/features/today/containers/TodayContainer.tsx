@@ -10,6 +10,7 @@ import { useDayLog } from '../hooks/useDayLog';
 import { useLogActions } from '../hooks/useLogActions';
 import { useSelectedDate } from '../hooks/useSelectedDate';
 import { EntryEditorContainer } from './EntryEditorContainer';
+import { BackupReminder } from './BackupReminder';
 import { EntryRowContainer } from './EntryRowContainer';
 import { ExerciseContainer } from './ExerciseContainer';
 import styles from './TodayContainer.module.css';
@@ -55,6 +56,7 @@ export function TodayContainer({ repos, now = () => new Date() }: TodayContainer
           device.
         </p>
       )}
+      <BackupReminder settings={repos.settings} hasData={day.entries.length > 0} now={now} />
       <NutritionLabel
         totals={day.totals}
         goal={day.goal}

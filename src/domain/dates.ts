@@ -86,3 +86,13 @@ export function clampToToday(value: string | null, today: LocalDate): LocalDate 
   if (!value || !isLocalDate(value) || isAfter(value, today)) return today;
   return value;
 }
+
+/** A gentle backup reminder after this many days. */
+export const BACKUP_REMINDER_DAYS = 14;
+
+/** True when there's data worth keeping and no backup in the last 14 days. */
+export function backupDue(lastBackupAt: number | null, now: Date, hasData: boolean): boolean {
+  if (!hasData) return false;
+  if (lastBackupAt === null) return true;
+  return now.getTime() - lastBackupAt > BACKUP_REMINDER_DAYS * 86_400_000;
+}

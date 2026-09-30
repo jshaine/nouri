@@ -1,6 +1,12 @@
 import { useState } from 'react';
-import type { GoalRepository, ProfileRepository, SettingsRepository } from '@/data';
+import type {
+  BackupRepository,
+  GoalRepository,
+  ProfileRepository,
+  SettingsRepository,
+} from '@/data';
 import { THEME_PREFERENCES, type ThemePreference } from '@/domain';
+import { BackupContainer } from '@/features/backup';
 import { GoalsContainer } from '@/features/goals';
 import { SegmentedControl, useDocumentTitle, useLive } from '@/ui';
 import { SettingsSection } from '../components/SettingsSection';
@@ -23,6 +29,7 @@ export interface SettingsContainerProps {
     goals: Pick<GoalRepository, 'live' | 'setFrom'>;
     settings: Pick<SettingsRepository, 'live' | 'set'>;
     profile: Pick<ProfileRepository, 'live' | 'update'>;
+    backup: BackupRepository;
   };
   now?: () => Date;
   version?: string;
@@ -78,6 +85,9 @@ export function SettingsContainer({
             }}
           />
         )}
+      </SettingsSection>
+      <SettingsSection title="Backup">
+        <BackupContainer repos={repos} {...(now ? { now } : {})} />
       </SettingsSection>
       <SettingsSection title="Storage">
         {s && <StorageStatus granted={s.persistGranted} />}

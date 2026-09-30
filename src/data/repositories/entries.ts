@@ -45,7 +45,9 @@ export function entryRepository({ db, now, newId }: RepoContext): EntryRepositor
 
     async add(input) {
       const entry: Entry = { ...input, id: newId(), createdAt: now() };
-      await db.entries.add(entryToRow(entry));
+      // An explicit transaction resolves only after the commit, so "Added" is never
+      // shown for a write that closing the app could still lose.
+      await db.transaction('rw', db.entries, () => db.entries.add(entryToRow(entry)));
       return entry;
     },
 

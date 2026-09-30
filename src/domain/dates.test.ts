@@ -1,6 +1,7 @@
 import {
   addDays,
   ageOn,
+  backupDue,
   clampToToday,
   compareDates,
   daysBetween,
@@ -95,5 +96,16 @@ describe('clampToToday', () => {
 
   it.each([null, '', 'soon', '2026-02-30', '2026-10-01'])('falls back to today for %j', (v) => {
     expect(clampToToday(v, today)).toBe(today);
+  });
+});
+
+describe('backupDue', () => {
+  const now = new Date('2026-10-01T12:00:00Z');
+  const daysAgo = (n: number) => now.getTime() - n * 86_400_000;
+  it('reminds after 14 days, or if never backed up, only when there is data', () => {
+    expect(backupDue(null, now, true)).toBe(true);
+    expect(backupDue(daysAgo(15), now, true)).toBe(true);
+    expect(backupDue(daysAgo(13), now, true)).toBe(false);
+    expect(backupDue(null, now, false)).toBe(false);
   });
 });

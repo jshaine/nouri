@@ -1,3 +1,4 @@
+import { backupRepository, type BackupRepository } from '../backup/repository';
 import { defaultContext, type RepoContext } from '../context';
 import { NouriDb } from '../db';
 import { openFoodDatabase, type FoodDatabase } from '../foods';
@@ -22,6 +23,8 @@ export interface Repositories {
   settings: SettingsRepository;
   /** Recently logged and favorite foods. */
   usage: UsageRepository;
+  /** Export and restore everything on this device. */
+  backup: BackupRepository;
   /** Bundled USDA/FNRI foods (read-only, searchable). */
   foods: FoodDatabase;
 }
@@ -29,6 +32,7 @@ export interface Repositories {
 export function createRepositories(ctx: RepoContext, foods: FoodDatabase): Repositories {
   return {
     foods,
+    backup: backupRepository(ctx),
     customFoods: customFoodRepository(ctx),
     entries: entryRepository(ctx),
     goals: goalRepository(ctx),
