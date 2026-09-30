@@ -1,0 +1,79 @@
+.figure {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.plot {
+  position: relative;
+  border-radius: var(--radius-md);
+  touch-action: pan-y;
+}
+
+.plot:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.grid {
+  stroke: var(--color-hairline);
+  stroke-width: 1;
+}
+
+.tick {
+  fill: var(--color-ink-muted);
+  font-size: var(--text-xs);
+}
+
+.goal {
+  stroke: var(--color-accent);
+  stroke-width: 1;
+}
+
+.goalLabel {
+  fill: var(--color-ink-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+}
+
+.line {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.crosshair {
+  stroke: var(--color-ink-muted);
+  stroke-width: 1;
+}
+
+/* 8px dot with a 2px surface ring so it stays legible on the line. */
+.dot {
+  fill: var(--color-ink);
+  stroke: var(--color-card);
+  stroke-width: 2;
+  paint-order: stroke;
+}
+
+/* Its own reserved line above the plot, so it never covers axis labels. */
+.readout {
+  min-height: calc(var(--text-sm) * var(--leading-body));
+  font-size: var(--text-sm);
+}
+
+.readout span {
+  color: var(--color-ink-muted);
+}
+
+.caption {
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+}
