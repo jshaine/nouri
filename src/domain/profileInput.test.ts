@@ -7,8 +7,8 @@ describe('parseHeight', () => {
   });
 
   it('reads feet and inches (inches optional)', () => {
-    expect(parseHeight('imperial', { ft: '5', in: '4' })).toEqual({ ok: true, value: 162.6 });
-    expect(parseHeight('imperial', { ft: '6', in: '' })).toEqual({ ok: true, value: 182.9 });
+    expect(parseHeight('imperial', { ft: '5', in: '4' })).toEqual({ ok: true, value: 162.56 });
+    expect(parseHeight('imperial', { ft: '6', in: '' })).toEqual({ ok: true, value: 182.88 });
   });
 
   it.each([
@@ -26,8 +26,8 @@ describe('parseHeight', () => {
 
 describe('parseBodyWeight', () => {
   it('reads kg and lb, returning kg', () => {
-    expect(parseBodyWeight('metric', '65.24')).toEqual({ ok: true, value: 65.2 });
-    expect(parseBodyWeight('imperial', '150')).toEqual({ ok: true, value: 68 });
+    expect(parseBodyWeight('metric', '65.24')).toEqual({ ok: true, value: 65.24 });
+    expect(parseBodyWeight('imperial', '150')).toEqual({ ok: true, value: 68.04 }); // shows as 150 lb
   });
 
   it.each([

@@ -56,8 +56,8 @@ describe('ProfileContainer', () => {
     await waitFor(async () => {
       expect(await repos.profile.get()).toMatchObject({
         units: 'imperial',
-        heightCm: 162.6,
-        goalWeightKg: 59,
+        heightCm: 162.56, // 5 ft 4 in exactly
+        goalWeightKg: 58.97, // 130 lb
       });
     });
   });
