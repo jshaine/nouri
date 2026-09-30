@@ -1,0 +1,40 @@
+.track {
+  --bar-color: var(--color-ink);
+  display: flex;
+  gap: 2px;
+  height: var(--bar-height);
+  border-radius: var(--radius-sm);
+  background: var(--color-track);
+  overflow: hidden;
+}
+
+.track[data-macro='protein'] {
+  --bar-color: var(--color-protein);
+}
+
+.track[data-macro='carbs'] {
+  --bar-color: var(--color-carbs);
+}
+
+.track[data-macro='fat'] {
+  --bar-color: var(--color-fat);
+}
+
+.fill,
+.overflow {
+  display: block;
+  height: 100%;
+  transform-origin: left;
+  transition: flex-basis var(--dur-base) var(--ease-out);
+}
+
+.fill {
+  flex: 0 0 calc(var(--fill) * 100%);
+  background: var(--bar-color);
+}
+
+/* Marks the amount past the goal with stripes, so it reads without color. */
+.overflow {
+  flex: 1 1 auto;
+  background: repeating-linear-gradient(135deg, var(--bar-color) 0 3px, var(--color-card) 3px 5px);
+}

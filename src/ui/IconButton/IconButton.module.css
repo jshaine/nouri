@@ -1,0 +1,26 @@
+.button {
+  display: inline-grid;
+  place-items: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-ink);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.button:hover:not(:disabled) {
+  background: var(--color-track);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.icon {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}

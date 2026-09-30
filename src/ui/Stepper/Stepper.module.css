@@ -1,0 +1,19 @@
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border: var(--rule-hair) solid var(--color-ink-muted);
+  border-radius: var(--radius-pill);
+  background: var(--color-card);
+}
+
+.input {
+  width: 5ch;
+  min-height: var(--tap-min);
+  border: 0;
+  background: transparent;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-heavy);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
