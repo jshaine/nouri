@@ -38,3 +38,41 @@ describe('SettingsContainer', () => {
     });
   });
 });
+
+describe('units and credits', () => {
+  it('switches units', async () => {
+    const { repos } = createTestRepositories();
+    render(<SettingsContainer repos={repos} version="1" />);
+    await userEvent.click(await screen.findByRole('radio', { name: 'lb, ft/in' }));
+    await waitFor(async () => {
+      expect((await repos.profile.get()).units).toBe('imperial');
+    });
+  });
+
+  it('credits the bundled data sources', async () => {
+    const { repos } = createTestRepositories();
+    render(<SettingsContainer repos={repos} version="1" />);
+    const about = screen.getByRole('region', { name: 'About' });
+    await waitFor(() => {
+      expect(about).toHaveTextContent('USDA FoodData Central');
+    });
+    expect(about).not.toHaveTextContent('FNRI');
+  });
+
+  it('credits FNRI only when its data is bundled', async () => {
+    const { repos } = createTestRepositories();
+    const foods = {
+      ...repos.foods,
+      ready: () =>
+        Promise.resolve({
+          count: 1,
+          sources: {
+            usda: 'USDA FoodData Central',
+            fnri: 'FNRI Philippine Food Composition Tables (PhilFCT), used with permission',
+          },
+        }),
+    };
+    render(<SettingsContainer repos={{ ...repos, foods }} version="1" />);
+    expect(await screen.findByText(/FNRI Philippine Food Composition Tables/)).toBeInTheDocument();
+  });
+});

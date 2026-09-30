@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type {
   BackupRepository,
+  FoodDatabase,
   GoalRepository,
   ProfileRepository,
   SettingsRepository,
@@ -10,7 +11,9 @@ import { BackupContainer } from '@/features/backup';
 import { GoalsContainer } from '@/features/goals';
 import { SegmentedControl, useDocumentTitle, useLive } from '@/ui';
 import { SettingsSection } from '../components/SettingsSection';
+import { DataCredits } from '../components/DataCredits';
 import { StorageStatus } from '../components/StorageStatus';
+import { useFoodSources } from './useFoodSources';
 import styles from '../components/Settings.module.css';
 
 const THEME_LABEL: Record<ThemePreference, string> = {
@@ -19,6 +22,10 @@ const THEME_LABEL: Record<ThemePreference, string> = {
   dark: 'Dark',
 };
 const THEME_OPTIONS = THEME_PREFERENCES.map((t) => ({ value: t, label: THEME_LABEL[t] }));
+const UNIT_OPTIONS = [
+  { value: 'metric', label: 'kg, cm' },
+  { value: 'imperial', label: 'lb, ft/in' },
+] as const;
 const EXERCISE_OPTIONS = [
   { value: 'off', label: 'Off' },
   { value: 'on', label: 'On' },
@@ -30,6 +37,7 @@ export interface SettingsContainerProps {
     settings: Pick<SettingsRepository, 'live' | 'set'>;
     profile: Pick<ProfileRepository, 'live' | 'update'>;
     backup: BackupRepository;
+    foods: Pick<FoodDatabase, 'ready'>;
   };
   now?: () => Date;
   version?: string;
@@ -45,6 +53,8 @@ export function SettingsContainer({
   const s = settings.value;
   const profile = useLive(() => repos.profile.live(), [repos.profile]);
   const [pendingExercise, setPendingExercise] = useState<boolean>();
+  const [pendingUnits, setPendingUnits] = useState<'metric' | 'imperial'>();
+  const sources = useFoodSources(repos.foods);
   // Show the tapped theme at once; the saved value catches up via the live query.
   const [pendingTheme, setPendingTheme] = useState<ThemePreference>();
 
@@ -73,6 +83,19 @@ export function SettingsContainer({
           </>
         )}
       </SettingsSection>
+      <SettingsSection title="Units">
+        {profile.value && (
+          <SegmentedControl
+            label="Weight and height"
+            options={UNIT_OPTIONS}
+            value={pendingUnits ?? profile.value.units}
+            onChange={(units) => {
+              setPendingUnits(units);
+              void repos.profile.update({ units });
+            }}
+          />
+        )}
+      </SettingsSection>
       <SettingsSection title="Appearance">
         {s && (
           <SegmentedControl
@@ -94,6 +117,7 @@ export function SettingsContainer({
       </SettingsSection>
       <SettingsSection title="About">
         <p className={styles.meta}>Nouri {version}. Your data stays on this device.</p>
+        <DataCredits sources={sources} />
       </SettingsSection>
     </div>
   );
