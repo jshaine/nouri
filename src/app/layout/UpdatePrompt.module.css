@@ -1,0 +1,23 @@
+/* Sits at the top, clear of the tab bar and the Add button. */
+.prompt {
+  position: fixed;
+  inset: calc(var(--space-2) + var(--safe-top)) calc(var(--gutter) + var(--safe-right)) auto
+    calc(var(--gutter) + var(--safe-left));
+  z-index: var(--z-toast);
+  display: grid;
+  gap: var(--space-2);
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-3);
+  border: var(--label-border) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  box-shadow: var(--shadow-sheet);
+  font-size: var(--text-sm);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
