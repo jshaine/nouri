@@ -1,15 +1,17 @@
 import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
-import type { CustomFoodRepository, EntryRepository, FoodDatabase } from '@/data';
+import type { CustomFoodRepository, EntryRepository, FoodDatabase, UsageRepository } from '@/data';
 import type { Entry, Food, LocalDate, Meal } from '@/domain';
 import { FoodDetailContainer } from '@/features/food-detail';
 import { Button, Sheet, Tabs } from '@/ui';
 import { CustomFoodContainer } from './CustomFoodContainer';
 import { MyFoodsTab } from './MyFoodsTab';
+import { RecentTab } from './RecentTab';
 import { SearchTab } from './SearchTab';
 
 const TABS = [
   { id: 'search', label: 'Search' },
+  { id: 'recent', label: 'Recent' },
   { id: 'mine', label: 'My foods' },
   { id: 'manual', label: 'Manual' },
 ] as const;
@@ -23,8 +25,9 @@ export interface AddFoodSheetProps {
   defaultMeal: Meal;
   repos: {
     foods: FoodDatabase;
-    customFoods: Pick<CustomFoodRepository, 'live' | 'create' | 'update'>;
+    customFoods: Pick<CustomFoodRepository, 'live' | 'get' | 'create' | 'update'>;
     entries: Pick<EntryRepository, 'add'>;
+    usage: Pick<UsageRepository, 'liveRecents' | 'liveFavorites' | 'isFavorite' | 'setFavorite'>;
   };
   onAdded: (entry: Entry) => void;
 }
@@ -73,6 +76,7 @@ export function AddFoodSheet({
             date={date}
             initialMeal={defaultMeal}
             repo={repos.entries}
+            usage={repos.usage}
             onAdded={added}
           />
         </>
@@ -90,6 +94,7 @@ export function AddFoodSheet({
               }}
             />
           </div>
+          {tab === 'recent' && <RecentTab repos={repos} onSelect={setSelected} />}
           {tab === 'mine' && (
             <MyFoodsTab
               repo={repos.customFoods}

@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { ensurePersistentStorage, type EntryRepository, type SettingsRepository } from '@/data';
+import {
+  ensurePersistentStorage,
+  type EntryRepository,
+  type SettingsRepository,
+  type UsageRepository,
+} from '@/data';
 import { MEAL_NAME, type Entry } from '@/domain';
 
 export interface ToastMessage {
@@ -11,6 +16,7 @@ export interface ToastMessage {
 interface Repos {
   entries: Pick<EntryRepository, 'remove' | 'restore'>;
   settings: Pick<SettingsRepository, 'get' | 'set'>;
+  usage: Pick<UsageRepository, 'recordUse'>;
 }
 
 /** Add / edit / delete-with-undo flow for the Today screen. */
@@ -54,6 +60,7 @@ export function useLogActions(repos: Repos) {
     onAdded: (entry: Entry) => {
       setAdding(false);
       show(`Added to ${MEAL_NAME[entry.meal]}`);
+      void repos.usage.recordUse(entry.foodKey);
       // Ask the browser to keep our data once there's something worth keeping.
       void ensurePersistentStorage(repos.settings);
     },

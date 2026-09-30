@@ -4,3 +4,4 @@ export type { Live } from './live';
 export * from './repositories';
 export { ensurePersistentStorage } from './persistence';
 export * from './foods';
+export { foodResolver } from './resolveFood';

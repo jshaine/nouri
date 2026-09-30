@@ -1,0 +1,10 @@
+.tab {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.heading {
+  padding-bottom: var(--space-1);
+  border-bottom: var(--rule-medium) solid var(--color-ink);
+  font-size: var(--text-lg);
+}
