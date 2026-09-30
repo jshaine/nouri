@@ -24,6 +24,8 @@ export function DateSwitcher({
   onPrevious,
   onNext,
   onPick,
+  previousLabel = 'Previous day',
+  nextLabel = 'Next day',
 }: DateSwitcherProps) {
   const pickerId = useId();
   const isToday = date === today;
