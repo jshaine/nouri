@@ -10,6 +10,7 @@ export * from './meals';
 export * from './numbers';
 export * from './nutrition';
 export * from './portionChoice';
+export * from './portionInput';
 export * from './progress';
 export * from './search';
 export * from './theme';

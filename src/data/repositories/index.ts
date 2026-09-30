@@ -4,6 +4,7 @@ import { openFoodDatabase, type FoodDatabase } from '../foods';
 import { customFoodRepository, type CustomFoodRepository } from './customFoods';
 import { entryRepository, type EntryRepository } from './entries';
 import { goalRepository, type GoalRepository } from './goals';
+import { portionOverrideRepository, type PortionOverrideRepository } from './portionOverrides';
 import { settingsRepository, type SettingsRepository } from './settings';
 import { usageRepository, type UsageRepository } from './usage';
 
@@ -11,6 +12,7 @@ export interface Repositories {
   customFoods: CustomFoodRepository;
   entries: EntryRepository;
   goals: GoalRepository;
+  portionOverrides: PortionOverrideRepository;
   settings: SettingsRepository;
   /** Recently logged and favorite foods. */
   usage: UsageRepository;
@@ -24,6 +26,7 @@ export function createRepositories(ctx: RepoContext, foods: FoodDatabase): Repos
     customFoods: customFoodRepository(ctx),
     entries: entryRepository(ctx),
     goals: goalRepository(ctx),
+    portionOverrides: portionOverrideRepository(ctx),
     settings: settingsRepository(ctx),
     usage: usageRepository(ctx),
   };
@@ -41,6 +44,7 @@ export type {
   CustomFoodRepository,
   EntryRepository,
   GoalRepository,
+  PortionOverrideRepository,
   SettingsRepository,
   UsageRepository,
 };
