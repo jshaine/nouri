@@ -1,0 +1,15 @@
+.screen {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.link {
+  color: var(--color-ink);
+  font-weight: var(--weight-bold);
+  text-underline-offset: 3px;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}

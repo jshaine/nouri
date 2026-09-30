@@ -1,0 +1,68 @@
+.meal {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: var(--space-1);
+  border-bottom: var(--rule-medium) solid var(--color-ink);
+}
+
+.name {
+  font-size: var(--text-lg);
+}
+
+.total {
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-3);
+  border: var(--rule-hair) solid var(--color-hairline);
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  text-align: left;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.entryMain {
+  display: grid;
+  min-width: 0;
+}
+
+.entryName {
+  overflow: hidden;
+  font-weight: var(--weight-bold);
+  text-overflow: ellipsis;
+}
+
+.entryMeta {
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+}
+
+.entryKcal {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-black);
+  font-stretch: var(--stretch-semi);
+}

@@ -1,22 +1,17 @@
 import { ChartColumn, ClipboardList, Settings, UserRound } from 'lucide-react';
 import type { RouteObject } from 'react-router';
+import type { Repositories } from '@/data';
+import { TodayContainer } from '@/features/today';
 import { AppLayout } from './layout/AppLayout';
 import { Placeholder } from './screens/Placeholder';
 
 /** Route table. Screens receive the repositories they need as props. */
-export function appRoutes(): RouteObject[] {
+export function appRoutes(repos: Repositories): RouteObject[] {
   return [
     {
       element: <AppLayout />,
       children: [
-        {
-          index: true,
-          element: (
-            <Placeholder title="Today" icon={ClipboardList}>
-              Logging meals arrives in the next update.
-            </Placeholder>
-          ),
-        },
+        { index: true, element: <TodayContainer repos={repos} /> },
         {
           path: 'history',
           element: (

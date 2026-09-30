@@ -13,7 +13,7 @@ export interface AppProps {
 
 export function App({ repos }: AppProps) {
   useThemeSync(repos.settings);
-  const [router] = useState(() => createBrowserRouter(appRoutes()));
+  const [router] = useState(() => createBrowserRouter(appRoutes(repos)));
 
   if (UiGallery && window.location.hash === '#gallery') {
     return (
