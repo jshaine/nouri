@@ -1,4 +1,3 @@
-import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import type {
   CustomFoodRepository,
@@ -8,10 +7,10 @@ import type {
   UsageRepository,
 } from '@/data';
 import type { Entry, Food, LocalDate, Meal } from '@/domain';
-import { FoodDetailContainer } from '@/features/food-detail';
-import { Button, Sheet, Tabs } from '@/ui';
+import { Sheet, Tabs } from '@/ui';
 import { CustomFoodContainer } from './CustomFoodContainer';
 import { MyFoodsTab } from './MyFoodsTab';
+import { SelectedFood } from './SelectedFood';
 import { RecentTab } from './RecentTab';
 import { SearchTab } from './SearchTab';
 
@@ -31,7 +30,7 @@ export interface AddFoodSheetProps {
   defaultMeal: Meal;
   repos: {
     foods: FoodDatabase;
-    customFoods: Pick<CustomFoodRepository, 'live' | 'get' | 'create' | 'update'>;
+    customFoods: Pick<CustomFoodRepository, 'live' | 'get' | 'create' | 'update' | 'remove'>;
     entries: Pick<EntryRepository, 'add'>;
     usage: Pick<UsageRepository, 'liveRecents' | 'liveFavorites' | 'isFavorite' | 'setFavorite'>;
     portionOverrides: Pick<PortionOverrideRepository, 'live' | 'save'>;
@@ -67,27 +66,17 @@ export function AddFoodSheet({
   return (
     <Sheet open={open} onClose={onClose} title={selected ? selected.name : 'Add food'}>
       {selected && (
-        <>
-          <Button
-            variant="ghost"
-            icon={ArrowLeft}
-            onClick={() => {
-              setSelected(undefined);
-            }}
-          >
-            Back to foods
-          </Button>
-          <FoodDetailContainer
-            key={selected.key}
-            food={selected}
-            date={date}
-            initialMeal={defaultMeal}
-            repo={repos.entries}
-            usage={repos.usage}
-            portions={repos.portionOverrides}
-            onAdded={added}
-          />
-        </>
+        <SelectedFood
+          food={selected}
+          date={date}
+          defaultMeal={defaultMeal}
+          repos={repos}
+          onBack={() => {
+            setSelected(undefined);
+          }}
+          onChanged={setSelected}
+          onAdded={added}
+        />
       )}
       {/* Stays mounted while a food is open, so a half-typed Manual form survives. */}
       <div hidden={selected !== undefined}>

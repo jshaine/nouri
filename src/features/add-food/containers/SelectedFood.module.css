@@ -1,0 +1,17 @@
+.view {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  margin-inline: calc(-1 * var(--space-4));
+}
+
+.tools {
+  display: flex;
+}
