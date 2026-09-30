@@ -10,3 +10,4 @@ export { Stepper, type StepperProps } from './Stepper/Stepper';
 export { Tabs, type TabItem, type TabsProps } from './Tabs/Tabs';
 export { Sheet, type SheetProps } from './Sheet/Sheet';
 export { TOAST_DURATION_MS } from './constants';
+export { useLive, type LiveState, type Subscribable } from './hooks/useLive';
