@@ -124,3 +124,30 @@ describe('basisNote', () => {
     );
   });
 });
+
+describe('favorites', () => {
+  it('toggles the star, exposed as a pressed button', async () => {
+    const { repos } = createTestRepositories();
+    render(
+      <FoodDetailContainer
+        food={rice}
+        date={TODAY}
+        initialMeal="lunch"
+        repo={repos.entries}
+        usage={repos.usage}
+        onAdded={vi.fn()}
+      />,
+    );
+    const star = await screen.findByRole('button', { name: 'Add to favorites' });
+    expect(star).toHaveAttribute('aria-pressed', 'false');
+    await userEvent.click(star);
+    const pressed = await screen.findByRole('button', { name: 'Remove from favorites' });
+    expect(pressed).toHaveAttribute('aria-pressed', 'true');
+    expect(await firstValue(repos.usage.isFavorite(rice.key))).toBe(true);
+  });
+
+  it('hides the star without a usage repository', () => {
+    setup(rice);
+    expect(screen.queryByRole('button', { name: /favorites/ })).not.toBeInTheDocument();
+  });
+});

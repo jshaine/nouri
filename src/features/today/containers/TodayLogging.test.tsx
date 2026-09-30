@@ -77,6 +77,10 @@ describe('Today logging', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Add to log' }));
     expect(await screen.findByRole('status')).toHaveTextContent('Added to Lunch');
     expect((await firstValue(repos.entries.liveForDate(TODAY)))[0]?.name).toBe('Pandesal');
+    // It's now a recent food.
+    await waitFor(async () => {
+      expect((await firstValue(repos.usage.liveRecents()))[0]?.foodKey).toBe('custom:id-1');
+    });
   });
 
   it('edits an entry amount and meal', async () => {

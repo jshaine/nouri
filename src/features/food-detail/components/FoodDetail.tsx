@@ -1,6 +1,8 @@
+import { Star } from 'lucide-react';
 import { MEAL_NAME, MEALS, type FoodSource, type MacroTotals, type Meal } from '@/domain';
 import {
   Button,
+  IconButton,
   SegmentedControl,
   SelectField,
   SourceBadge,
@@ -26,6 +28,9 @@ export interface FoodDetailProps {
   onMealChange: (meal: Meal) => void;
   totals: MacroTotals;
   onAdd: () => void;
+  /** undefined hides the star. */
+  favorite?: boolean | undefined;
+  onToggleFavorite?: () => void;
   adding?: boolean;
   error?: string | undefined;
 }
@@ -36,10 +41,21 @@ export function FoodDetail(props: FoodDetailProps) {
   const isGrams = unitId === 'g';
   return (
     <div className={styles.detail}>
-      <p className={styles.meta}>
-        <SourceBadge source={props.source} />
-        <span>{props.basisNote}</span>
-      </p>
+      <div className={styles.metaRow}>
+        <p className={styles.meta}>
+          <SourceBadge source={props.source} />
+          <span>{props.basisNote}</span>
+        </p>
+        {props.favorite !== undefined && (
+          <IconButton
+            icon={Star}
+            label={props.favorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-pressed={props.favorite}
+            className={props.favorite ? styles.starred : undefined}
+            onClick={props.onToggleFavorite}
+          />
+        )}
+      </div>
       <div className={styles.amount}>
         <SelectField
           label="Portion"

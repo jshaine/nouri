@@ -1,8 +1,9 @@
 import { SearchX } from 'lucide-react';
 import { useState } from 'react';
 import type { CustomFoodRepository, FoodDatabase } from '@/data';
-import { DEFAULT_RESULT_LIMIT, defaultPortionSummary, formatNumber, type Food } from '@/domain';
+import { DEFAULT_RESULT_LIMIT, type Food } from '@/domain';
 import { Button, EmptyState, TextField } from '@/ui';
+import { describeFood } from '../components/describeFood';
 import { FoodList } from '../components/FoodList';
 import { useFoodSearch } from '../hooks/useFoodSearch';
 import styles from './SearchTab.module.css';
@@ -13,11 +14,6 @@ interface SearchTabProps {
   /** No match: offer to create it, carrying the typed name. */
   onCreate: (name: string) => void;
 }
-
-const describe = (food: Food) => {
-  const { kcal, portion } = defaultPortionSummary(food);
-  return `${formatNumber(kcal)} kcal · ${portion}`;
-};
 
 export function SearchTab({ repos, onSelect, onCreate }: SearchTabProps) {
   const [query, setQuery] = useState('');
@@ -67,7 +63,7 @@ export function SearchTab({ repos, onSelect, onCreate }: SearchTabProps) {
             label="Search results"
             foods={search.results}
             onSelect={onSelect}
-            describe={describe}
+            describe={describeFood}
           />
         )}
         {q && search.status === 'ready' && !search.pending && search.results.length === 0 && (
