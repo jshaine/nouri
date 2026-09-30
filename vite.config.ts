@@ -3,9 +3,9 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath } from 'node:url';
 
-/** Provisional brand colors; finalized with the approved design direction. */
-const THEME_COLOR = '#1f1d1a';
-const BACKGROUND_COLOR = '#f6f1e7';
+/** Label paper (--color-paper, light). Splash and browser chrome color. */
+const THEME_COLOR = '#f5f0e6';
+const BACKGROUND_COLOR = '#f5f0e6';
 /** foods.json is precached, so allow it past Workbox's 2 MiB default. */
 const MAX_PRECACHE_BYTES = 6 * 1024 * 1024;
 
