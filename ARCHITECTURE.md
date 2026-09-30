@@ -42,6 +42,23 @@ IndexedDB on the device, and the food database ships as `public/foods.json`.
 - Tests use `createTestRepositories()` from `src/data/testing.ts`: a fresh
   fake-indexeddb database with a controllable clock and sequential ids.
 
+## Features and wiring
+
+- `src/main.tsx` opens the repositories once and passes them to `App`, and
+  `src/app/routes.tsx` hands each screen the repositories it needs as props.
+  (Features can't import `app`, and `data` has no React, so there is no shared
+  context layer; explicit props also make container tests use real
+  repositories on fake-indexeddb.)
+- Features so far: `today` (Daily Facts label, meals, date switcher, edit,
+  delete + undo), `add-food` (Add sheet, custom food form), `food-detail`
+  (portion, quantity, meal, Add to log), `goals` (manual goal editor) and
+  `settings`.
+- When a presentational list needs per-row behavior (e.g. long-press), the
+  component takes a render prop and a small container supplies the row, so
+  components never import hooks or containers.
+- Controls bound to live settings keep the tapped value locally until the
+  saved value arrives, so they never flicker back.
+
 ## Design system
 
 Visual rules and tokens are documented in [DESIGN.md](DESIGN.md). Tokens live in
