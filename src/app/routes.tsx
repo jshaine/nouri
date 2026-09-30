@@ -1,6 +1,7 @@
-import { ChartColumn, ClipboardList, Settings, UserRound } from 'lucide-react';
+import { ChartColumn, ClipboardList, UserRound } from 'lucide-react';
 import type { RouteObject } from 'react-router';
 import type { Repositories } from '@/data';
+import { SettingsContainer } from '@/features/settings';
 import { TodayContainer } from '@/features/today';
 import { AppLayout } from './layout/AppLayout';
 import { Placeholder } from './screens/Placeholder';
@@ -28,14 +29,7 @@ export function appRoutes(repos: Repositories): RouteObject[] {
             </Placeholder>
           ),
         },
-        {
-          path: 'settings',
-          element: (
-            <Placeholder title="Settings" icon={Settings}>
-              Goals, theme, units and backups.
-            </Placeholder>
-          ),
-        },
+        { path: 'settings', element: <SettingsContainer repos={repos} /> },
         { path: '*', element: <NotFound /> },
       ],
     },
