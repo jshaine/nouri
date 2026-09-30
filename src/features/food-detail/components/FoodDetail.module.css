@@ -1,0 +1,41 @@
+.detail {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
+.amount {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--space-3);
+}
+
+.quantity {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.quantityLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 380px) {
+  .amount {
+    grid-template-columns: 1fr;
+  }
+}
