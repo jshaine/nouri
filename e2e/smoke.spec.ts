@@ -1,4 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { skipOnboarding } from './helpers';
+
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+});
 
 test('app loads on Today and switches tabs', async ({ page }) => {
   await page.goto('/');

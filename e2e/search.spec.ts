@@ -1,4 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
+import { skipOnboarding } from './helpers';
+
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+});
 
 async function openSearch(page: Page) {
   await page.getByRole('button', { name: 'Add food' }).click();

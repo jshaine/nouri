@@ -1,4 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { skipOnboarding } from './helpers';
+
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+});
 
 test('sets manual goals and a theme in Settings', async ({ page }) => {
   await page.goto('/settings');

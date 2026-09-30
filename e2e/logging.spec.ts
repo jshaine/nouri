@@ -1,4 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { skipOnboarding } from './helpers';
+
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+});
 
 test('logs a custom food and changes the date', async ({ page }) => {
   await page.goto('/');
