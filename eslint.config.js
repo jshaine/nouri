@@ -57,6 +57,8 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.flatConfigs.strict.rules,
+      // Radio cards nest their text one level deeper than the default allows.
+      'jsx-a11y/label-has-associated-control': ['error', { depth: 3 }],
       'no-restricted-imports': restrict(),
     },
   },
