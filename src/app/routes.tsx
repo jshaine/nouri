@@ -1,17 +1,24 @@
 import { ChartColumn, ClipboardList } from 'lucide-react';
 import type { RouteObject } from 'react-router';
 import type { Repositories } from '@/data';
+import { OnboardingContainer } from '@/features/onboarding';
 import { ProfileContainer } from '@/features/profile';
 import { SettingsContainer } from '@/features/settings';
 import { TodayContainer } from '@/features/today';
 import { AppLayout } from './layout/AppLayout';
+import { OnboardingGate } from './layout/OnboardingGate';
 import { Placeholder } from './screens/Placeholder';
 
 /** Route table. Screens receive the repositories they need as props. */
 export function appRoutes(repos: Repositories): RouteObject[] {
   return [
+    { path: 'welcome', element: <OnboardingContainer repos={repos} /> },
     {
-      element: <AppLayout />,
+      element: (
+        <OnboardingGate settings={repos.settings}>
+          <AppLayout />
+        </OnboardingGate>
+      ),
       children: [
         { index: true, element: <TodayContainer repos={repos} /> },
         {
