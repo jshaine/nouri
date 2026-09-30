@@ -57,6 +57,11 @@ describe('basisFactor', () => {
     expect(basisFactor(rice, rice.portions, 250, { kind: 'grams' })).toBe(2.5);
   });
 
+  it('converts ounces through grams', () => {
+    expect(basisFactor(rice, rice.portions, 4, { kind: 'ounces' })).toBeCloseTo(1.134, 3); // 113.4 g
+    expect(() => basisFactor(adobo, adobo.portions, 4, { kind: 'ounces' })).toThrow(UnitError);
+  });
+
   it('converts gram portions', () => {
     expect(basisFactor(rice, rice.portions, 2, { kind: 'portion', label: '1 cup' })).toBeCloseTo(
       3.16,

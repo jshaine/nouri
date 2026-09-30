@@ -21,6 +21,7 @@ describe('EntryRow', () => {
     [{ amount: 1 }, '1 cup · P 4.3 C 44 F 0.5'],
     [{ amount: 2.5 }, '2.5 × 1 cup'],
     [{ amount: 150, unit: { kind: 'grams' as const } }, '150 g'],
+    [{ amount: 4, unit: { kind: 'ounces' as const } }, '4 oz'],
   ])('describes %j', (over, text) => {
     render(
       <ul>

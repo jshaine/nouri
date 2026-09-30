@@ -40,6 +40,7 @@ describe('entries', () => {
 
   it('labels units', () => {
     expect(unitLabel({ kind: 'grams' })).toBe('g');
+    expect(unitLabel({ kind: 'ounces' })).toBe('oz');
     expect(unitLabel({ kind: 'portion', label: '1 cup' })).toBe('1 cup');
   });
 });

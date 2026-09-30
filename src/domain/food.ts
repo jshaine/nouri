@@ -45,8 +45,25 @@ export interface Food {
   portions: readonly Portion[];
 }
 
-/** An entry's unit: grams, or the label of one of the food's portions. */
-export type EntryUnit = { kind: 'grams' } | { kind: 'portion'; label: string };
+/** An entry's unit: a weight (grams or ounces), or the label of one of the food's portions. */
+export type EntryUnit = { kind: 'grams' } | { kind: 'ounces' } | { kind: 'portion'; label: string };
+export type WeightUnit = Extract<EntryUnit, { kind: 'grams' | 'ounces' }>;
+
+export const GRAMS_PER_OUNCE = 28.349523125;
+
+export function isWeightUnit(unit: EntryUnit): unit is WeightUnit {
+  return unit.kind === 'grams' || unit.kind === 'ounces';
+}
+
+/** Grams in `amount` of a weight unit. */
+export function weightInGrams(amount: number, unit: WeightUnit): number {
+  return unit.kind === 'grams' ? amount : amount * GRAMS_PER_OUNCE;
+}
+
+/** Short unit text: "g", "oz", or the portion's label. */
+export function unitShortLabel(unit: EntryUnit): string {
+  return unit.kind === 'grams' ? 'g' : unit.kind === 'ounces' ? 'oz' : unit.label;
+}
 
 export const GRAMS_PER_100G_BASIS = 100;
 export const SERVING_PORTION_LABEL = '1 serving';

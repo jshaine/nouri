@@ -31,11 +31,12 @@ const weighed: Food = {
 const plain: Food = { ...rice, portions: [] };
 
 describe('unitOptions', () => {
-  it('lists portions with their weight, then grams', () => {
+  it('lists portions with their weight, then grams and ounces', () => {
     expect(unitOptions(rice, [{ label: '1 cup kanin', grams: 160 }]).map((o) => o.label)).toEqual([
       '1 cup (158 g)',
       '1 cup kanin (160 g)',
       'grams',
+      'ounces',
     ]);
   });
 
@@ -90,5 +91,18 @@ describe('defaultPortionSummary', () => {
 
   it('describes a serving of unknown weight', () => {
     expect(defaultPortionSummary(adobo)).toEqual({ kcal: 126, portion: '1 serving' });
+  });
+});
+
+describe('ounces', () => {
+  it('finds the ounces option and defaults to 3.5 oz, or the serving weight', () => {
+    expect(optionForUnit(unitOptions(rice), { kind: 'ounces' })?.id).toBe('oz');
+    expect(defaultAmount(rice, { kind: 'ounces' })).toBe(3.5);
+    expect(defaultAmount(weighed, { kind: 'ounces' })).toBe(6.5); // 180 g ≈ 6.35 oz → nearest ½
+    expect(stepFor({ kind: 'ounces' })).toBe(0.5);
+  });
+
+  it('offers no ounces without a known weight', () => {
+    expect(unitOptions(adobo).map((o) => o.id)).not.toContain('oz');
   });
 });
