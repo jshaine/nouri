@@ -33,10 +33,15 @@ export interface ProfileDetailsFormProps {
 export function ProfileDetailsForm(props: ProfileDetailsFormProps) {
   const { profile, drafts, errors, onEdit, onCommit } = props;
   const metric = profile.units === 'metric';
-  const pace =
+  // No pace is shown as chosen until one is saved (a default that isn't saved misleads).
+  const chosen =
     profile.weeklyGoalKg !== undefined && props.paces.includes(profile.weeklyGoalKg)
-      ? profile.weeklyGoalKg
-      : 0;
+      ? String(profile.weeklyGoalKg)
+      : '';
+  const paceOptions = props.paces.map((kg) => ({
+    value: String(kg),
+    label: paceLabel(kg, profile.units),
+  }));
   return (
     <div className={styles.form}>
       <SegmentedControl
@@ -117,14 +122,13 @@ export function ProfileDetailsForm(props: ProfileDetailsFormProps) {
       <ActivityField value={profile.activity} onChange={props.onActivity} />
       <SelectField
         label="Weekly goal"
-        options={props.paces.map((kg) => ({
-          value: String(kg),
-          label: paceLabel(kg, profile.units),
-        }))}
-        value={String(pace)}
+        options={
+          chosen ? paceOptions : [{ value: '', label: 'Choose a weekly goal' }, ...paceOptions]
+        }
+        value={chosen}
         hint={props.hasWeight ? undefined : 'Log your current weight below to choose a pace.'}
         onChange={(v) => {
-          props.onWeeklyGoal(Number(v) as WeeklyGoal);
+          if (v) props.onWeeklyGoal(Number(v) as WeeklyGoal);
         }}
       />
     </div>

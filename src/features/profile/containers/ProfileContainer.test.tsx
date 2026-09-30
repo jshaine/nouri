@@ -102,6 +102,19 @@ describe('ProfileContainer', () => {
     });
   });
 
+  it('shows no pace as chosen until one is picked', async () => {
+    const { repos } = createTestRepositories();
+    await repos.weights.set('2026-09-29' as LocalDate, 65);
+    await repos.profile.update({ goalWeightKg: 58 });
+    render(<ProfileContainer repos={repos} now={NOW} />);
+    const pace = await screen.findByLabelText('Weekly goal');
+    expect(pace).toHaveDisplayValue('Choose a weekly goal');
+    await userEvent.selectOptions(pace, 'Lose 0.5 kg per week');
+    await waitFor(async () => {
+      expect((await repos.profile.get()).weeklyGoalKg).toBe(-0.5);
+    });
+  });
+
   it('asks for a weight before offering paces', async () => {
     setup();
     expect(await screen.findByLabelText('Weekly goal')).toHaveAccessibleDescription(

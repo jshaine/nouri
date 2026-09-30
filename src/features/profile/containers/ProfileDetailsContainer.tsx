@@ -19,7 +19,7 @@ export function ProfileDetailsContainer({
   const form = useProfileForm(profile, repo, currentKg, today);
   return (
     <ProfileDetailsForm
-      profile={profile}
+      profile={form.shown}
       drafts={form.drafts}
       errors={form.errors}
       paces={form.paces}
