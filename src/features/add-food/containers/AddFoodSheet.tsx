@@ -1,13 +1,15 @@
 import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
-import type { CustomFoodRepository, EntryRepository } from '@/data';
+import type { CustomFoodRepository, EntryRepository, FoodDatabase } from '@/data';
 import type { Entry, Food, LocalDate, Meal } from '@/domain';
 import { FoodDetailContainer } from '@/features/food-detail';
 import { Button, Sheet, Tabs } from '@/ui';
 import { CustomFoodContainer } from './CustomFoodContainer';
 import { MyFoodsTab } from './MyFoodsTab';
+import { SearchTab } from './SearchTab';
 
 const TABS = [
+  { id: 'search', label: 'Search' },
   { id: 'mine', label: 'My foods' },
   { id: 'manual', label: 'Manual' },
 ] as const;
@@ -20,6 +22,7 @@ export interface AddFoodSheetProps {
   /** Meal preselected in the food detail (time of day). */
   defaultMeal: Meal;
   repos: {
+    foods: FoodDatabase;
     customFoods: Pick<CustomFoodRepository, 'live' | 'create' | 'update'>;
     entries: Pick<EntryRepository, 'add'>;
   };
@@ -38,13 +41,15 @@ export function AddFoodSheet({
   repos,
   onAdded,
 }: AddFoodSheetProps) {
-  const [tab, setTab] = useState<TabId>('mine');
+  const [tab, setTab] = useState<TabId>('search');
+  const [suggestedName, setSuggestedName] = useState('');
   const [selected, setSelected] = useState<Food>();
   const [formKey, setFormKey] = useState(0);
 
   const added = (entry: Entry) => {
     setSelected(undefined);
-    setTab('mine');
+    setTab('search');
+    setSuggestedName('');
     setFormKey((k) => k + 1);
     onAdded(entry);
   };
@@ -75,6 +80,16 @@ export function AddFoodSheet({
       {/* Stays mounted while a food is open, so a half-typed Manual form survives. */}
       <div hidden={selected !== undefined}>
         <Tabs label="Find a food" tabs={TABS} value={tab} onChange={setTab}>
+          <div hidden={tab !== 'search'}>
+            <SearchTab
+              repos={repos}
+              onSelect={setSelected}
+              onCreate={(name) => {
+                setSuggestedName(name);
+                setTab('manual');
+              }}
+            />
+          </div>
           {tab === 'mine' && (
             <MyFoodsTab
               repo={repos.customFoods}
@@ -85,7 +100,12 @@ export function AddFoodSheet({
             />
           )}
           <div hidden={tab !== 'manual'}>
-            <CustomFoodContainer key={formKey} repo={repos.customFoods} onSaved={setSelected} />
+            <CustomFoodContainer
+              key={formKey}
+              repo={repos.customFoods}
+              suggestedName={suggestedName}
+              onSaved={setSelected}
+            />
           </div>
         </Tabs>
       </div>

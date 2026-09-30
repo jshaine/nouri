@@ -6,7 +6,7 @@ test('logs a custom food and changes the date', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Add food' }).click();
   const sheet = page.getByRole('dialog', { name: 'Add food' });
-  await sheet.getByRole('button', { name: 'Add a food' }).click();
+  await sheet.getByRole('tab', { name: 'Manual' }).click();
   // No field spills past the sheet's edge on a phone.
   const spill = await sheet.evaluate((d) => {
     const edge = d.getBoundingClientRect().right;

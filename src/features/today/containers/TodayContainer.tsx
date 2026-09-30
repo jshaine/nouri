@@ -15,7 +15,7 @@ import { EntryRowContainer } from './EntryRowContainer';
 import styles from './TodayContainer.module.css';
 
 export interface TodayContainerProps {
-  repos: Pick<Repositories, 'entries' | 'goals' | 'customFoods' | 'settings'>;
+  repos: Pick<Repositories, 'entries' | 'goals' | 'customFoods' | 'settings' | 'foods'>;
   now?: () => Date;
 }
 

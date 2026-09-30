@@ -36,6 +36,7 @@ describe('Today logging', () => {
     const { repos } = setup();
     await userEvent.click(screen.getByRole('button', { name: 'Add food' }));
     const sheet = screen.getByRole('dialog', { name: 'Add food' });
+    await userEvent.click(within(sheet).getByRole('tab', { name: 'My foods' }));
     expect(
       await within(sheet).findByRole('heading', { name: 'No foods of your own yet' }),
     ).toBeInTheDocument();
@@ -71,6 +72,7 @@ describe('Today logging', () => {
       f: 2,
     });
     await userEvent.click(screen.getByRole('button', { name: 'Add food' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'My foods' }));
     await userEvent.click(await screen.findByRole('button', { name: /Pandesal/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Add to log' }));
     expect(await screen.findByRole('status')).toHaveTextContent('Added to Lunch');

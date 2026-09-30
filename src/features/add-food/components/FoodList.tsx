@@ -8,6 +8,8 @@ export interface FoodListProps {
   onSelect: (food: Food) => void;
   /** Accessible name for the list, e.g. "Your foods". */
   label: string;
+  /** Second line after the badge; defaults to kcal for the food's basis. */
+  describe?: (food: Food) => string;
 }
 
 function per(food: Food): string {
@@ -15,7 +17,9 @@ function per(food: Food): string {
 }
 
 /** Tappable foods with source and calories for their basis. */
-export function FoodList({ foods, onSelect, label }: FoodListProps) {
+const basisKcal = (food: Food) => `${formatNumber(caloriesOf(food.nutrients))} kcal ${per(food)}`;
+
+export function FoodList({ foods, onSelect, label, describe = basisKcal }: FoodListProps) {
   return (
     <ul className={styles.list} aria-label={label}>
       {foods.map((food) => (
@@ -30,8 +34,7 @@ export function FoodList({ foods, onSelect, label }: FoodListProps) {
             <span className={styles.main}>
               <span className={styles.name}>{food.name}</span>{' '}
               <span className={styles.meta}>
-                <SourceBadge source={food.source} /> {formatNumber(caloriesOf(food.nutrients))} kcal{' '}
-                {per(food)}
+                <SourceBadge source={food.source} /> {describe(food)}
               </span>
             </span>
             <ChevronRight className={styles.chevron} aria-hidden="true" />
