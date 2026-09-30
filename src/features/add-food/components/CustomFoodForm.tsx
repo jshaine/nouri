@@ -4,6 +4,11 @@ import { Button, NumberField, SegmentedControl, TextField } from '@/ui';
 import { NutrientFields } from './NutrientFields';
 import styles from './CustomFoodForm.module.css';
 
+const WEIGHT_UNITS = [
+  { value: 'g', label: 'g' },
+  { value: 'oz', label: 'oz' },
+] as const;
+
 const BASIS_OPTIONS = [
   { value: '100g', label: 'Per 100 g' },
   { value: 'serving', label: 'Per serving' },
@@ -90,17 +95,28 @@ export function CustomFoodForm({
         }}
       />
       {value.basis === 'serving' && (
-        <NumberField
-          id={idFor('servingGrams')}
-          label="Serving weight (optional)"
-          unit="g"
-          value={value.servingGrams}
-          error={errors.servingGrams}
-          hint="Leave empty if you don’t know it. You’ll log this food by serving."
-          onChange={(v) => {
-            onChange('servingGrams', v);
-          }}
-        />
+        <div className={styles.servingRow}>
+          <NumberField
+            id={idFor('servingGrams')}
+            label="Serving weight (optional)"
+            unit={value.servingUnit}
+            value={value.servingGrams}
+            error={errors.servingGrams}
+            hint="Leave empty if you don’t know it. You’ll log this food by serving."
+            onChange={(v) => {
+              onChange('servingGrams', v);
+            }}
+          />
+          <SegmentedControl
+            label="Weight unit"
+            hideLabel
+            options={WEIGHT_UNITS}
+            value={value.servingUnit}
+            onChange={(v) => {
+              onChange('servingUnit', v);
+            }}
+          />
+        </div>
       )}
       <NutrientFields value={value} errors={errors} onChange={onChange} idFor={idFor} />
       {saveError && (

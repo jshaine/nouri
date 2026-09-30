@@ -32,7 +32,12 @@ export function useEntryEditor(
   };
 
   return {
-    unitText: entry.unit.kind === 'grams' ? 'grams' : `× ${unitLabel(entry.unit)}`,
+    unitText:
+      entry.unit.kind === 'grams'
+        ? 'grams'
+        : entry.unit.kind === 'ounces'
+          ? 'ounces'
+          : `× ${unitLabel(entry.unit)}`,
     amount,
     step: stepFor(entry.unit),
     onAmountChange: setAmount,

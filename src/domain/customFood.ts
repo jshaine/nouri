@@ -1,4 +1,11 @@
-import { foodKey, SERVING_PORTION_LABEL, type Food, type FoodBasis, type Portion } from './food';
+import {
+  foodKey,
+  GRAMS_PER_OUNCE,
+  SERVING_PORTION_LABEL,
+  type Food,
+  type FoodBasis,
+  type Portion,
+} from './food';
 import { parseDecimal } from './numbers';
 
 /** Raw text from the custom food form. */
@@ -8,6 +15,8 @@ export interface CustomFoodInput {
   basis: '100g' | 'serving';
   /** Only for per-serving foods; empty when the weight is unknown. */
   servingGrams: string;
+  /** The unit servingGrams is typed in; stored as grams either way. */
+  servingUnit: 'g' | 'oz';
   kcal: string;
   p: string;
   c: string;
@@ -39,6 +48,7 @@ export const EMPTY_CUSTOM_FOOD: CustomFoodInput = {
   aliases: '',
   basis: '100g',
   servingGrams: '',
+  servingUnit: 'g',
   kcal: '',
   p: '',
   c: '',
@@ -79,11 +89,13 @@ export function validateCustomFood(input: CustomFoodInput): Result {
 
   let servingGrams: number | undefined;
   if (input.basis === 'serving' && input.servingGrams.trim()) {
-    const g = parseDecimal(input.servingGrams);
+    const typed = parseDecimal(input.servingGrams);
+    const g = typed === null ? null : input.servingUnit === 'oz' ? typed * GRAMS_PER_OUNCE : typed;
     if (g === null || g <= 0 || g > MAX_SERVING_GRAMS) {
-      errors.servingGrams =
-        'Enter the serving weight in grams, or leave it empty if you don’t know it.';
-    } else servingGrams = g;
+      errors.servingGrams = `Enter the serving weight in ${
+        input.servingUnit === 'oz' ? 'ounces' : 'grams'
+      }, or leave it empty if you don’t know it.`;
+    } else servingGrams = Math.round(g * 10) / 10;
   }
 
   // Macros can't weigh more than the food itself.
@@ -150,6 +162,7 @@ export function foodToCustomFoodInput(food: Food): CustomFoodInput {
     aliases: food.aliases.join(', '),
     basis: food.basis.kind,
     servingGrams: food.basis.kind === 'serving' ? text(food.basis.servingGrams) : '',
+    servingUnit: 'g',
     kcal: text(food.nutrients.kcal),
     p: text(food.nutrients.p),
     c: text(food.nutrients.c),

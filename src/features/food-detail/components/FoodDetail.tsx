@@ -43,7 +43,7 @@ export interface FoodDetailProps {
 /** Choose how much of a food, and when, with a live preview. */
 export function FoodDetail(props: FoodDetailProps) {
   const { unitOptions, unitId, amount, meal, totals, adding = false, error } = props;
-  const isGrams = unitId === 'g';
+  const amountLabel = unitId === 'g' ? 'Grams' : unitId === 'oz' ? 'Ounces' : 'Quantity';
   return (
     <div className={styles.detail}>
       <div className={styles.metaRow}>
@@ -70,10 +70,10 @@ export function FoodDetail(props: FoodDetailProps) {
         />
         <div className={styles.quantity}>
           <span className={styles.quantityLabel} aria-hidden="true">
-            {isGrams ? 'Grams' : 'Quantity'}
+            {amountLabel}
           </span>
           <Stepper
-            label={isGrams ? 'Grams' : 'Quantity'}
+            label={amountLabel}
             value={amount}
             step={props.amountStep}
             min={0}

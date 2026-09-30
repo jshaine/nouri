@@ -1,4 +1,12 @@
-import { gramsPerBasis, type EntryUnit, type Food, type Nutrients, type Portion } from './food';
+import {
+  gramsPerBasis,
+  isWeightUnit,
+  weightInGrams,
+  type EntryUnit,
+  type Food,
+  type Nutrients,
+  type Portion,
+} from './food';
 import type { Macro } from './macros';
 
 /** Energy per gram of each macro (Atwater general factors). */
@@ -39,9 +47,9 @@ export function basisFactor(
   unit: EntryUnit,
 ): number {
   const perBasis = gramsPerBasis(food.basis);
-  if (unit.kind === 'grams') {
-    if (perBasis === null) throw new UnitError('This food has no gram weight; use a portion.');
-    return amount / perBasis;
+  if (isWeightUnit(unit)) {
+    if (perBasis === null) throw new UnitError('This food has no weight; use a portion.');
+    return weightInGrams(amount, unit) / perBasis;
   }
   const portion = portions.find((p) => p.label === unit.label);
   if (!portion) throw new UnitError(`Unknown portion "${unit.label}".`);

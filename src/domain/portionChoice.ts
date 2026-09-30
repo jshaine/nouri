@@ -1,4 +1,12 @@
-import { availablePortions, supportsGrams, type EntryUnit, type Food, type Portion } from './food';
+import {
+  availablePortions,
+  GRAMS_PER_OUNCE,
+  supportsGrams,
+  unitShortLabel,
+  type EntryUnit,
+  type Food,
+  type Portion,
+} from './food';
 import { nutrientsFor } from './nutrition';
 
 /** One choice in the portion picker. `id` is stable for form controls. */
@@ -9,12 +17,16 @@ export interface UnitOption {
 }
 
 export const GRAMS_OPTION_ID = 'g';
+export const OUNCES_OPTION_ID = 'oz';
 const PORTION_PREFIX = 'portion:';
 
 /** Default amount when grams are picked: one basis serving if weighed, else 100 g. */
 export const DEFAULT_GRAMS = 100;
+/** About 100 g. */
+export const DEFAULT_OUNCES = 3.5;
 /** Quantity steps for the stepper. */
 export const GRAM_STEP = 10;
+export const OUNCE_STEP = 0.5;
 export const PORTION_STEP = 0.5;
 
 function portionLabel(p: Portion): string {
@@ -30,6 +42,7 @@ export function unitOptions(food: Food, overrides: readonly Portion[] = []): Uni
   }));
   if (supportsGrams(food)) {
     options.push({ id: GRAMS_OPTION_ID, unit: { kind: 'grams' }, label: 'grams' });
+    options.push({ id: OUNCES_OPTION_ID, unit: { kind: 'ounces' }, label: 'ounces' });
   }
   return options;
 }
@@ -39,9 +52,9 @@ export function optionForUnit(
   unit: EntryUnit,
 ): UnitOption | undefined {
   return options.find((o) =>
-    unit.kind === 'grams'
-      ? o.unit.kind === 'grams'
-      : o.unit.kind === 'portion' && o.unit.label === unit.label,
+    unit.kind === 'portion'
+      ? o.unit.kind === 'portion' && o.unit.label === unit.label
+      : o.unit.kind === unit.kind,
   );
 }
 
@@ -57,13 +70,15 @@ export function defaultChoice(
 
 export function defaultAmount(food: Food, unit: EntryUnit): number {
   if (unit.kind === 'portion') return 1;
-  return food.basis.kind === 'serving' && food.basis.servingGrams !== undefined
-    ? food.basis.servingGrams
-    : DEFAULT_GRAMS;
+  const serving = food.basis.kind === 'serving' ? food.basis.servingGrams : undefined;
+  if (unit.kind === 'ounces') {
+    return serving === undefined ? DEFAULT_OUNCES : Math.round((serving / GRAMS_PER_OUNCE) * 2) / 2;
+  }
+  return serving ?? DEFAULT_GRAMS;
 }
 
 export function stepFor(unit: EntryUnit): number {
-  return unit.kind === 'grams' ? GRAM_STEP : PORTION_STEP;
+  return unit.kind === 'grams' ? GRAM_STEP : unit.kind === 'ounces' ? OUNCE_STEP : PORTION_STEP;
 }
 
 /** What a search result shows: calories for the default portion, e.g. "205 kcal · 1 cup (158 g)". */
@@ -75,6 +90,7 @@ export function defaultPortionSummary(
   const option = optionForUnit(unitOptions(food, overrides), unit);
   const portions = availablePortions(food, overrides);
   const kcal = Math.round(nutrientsFor(food, portions, amount, unit).kcal);
-  const portion = unit.kind === 'grams' ? `${amount} g` : (option?.label ?? unit.label);
+  const portion =
+    unit.kind === 'portion' ? (option?.label ?? unit.label) : `${amount} ${unitShortLabel(unit)}`;
   return { kcal, portion };
 }

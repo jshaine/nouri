@@ -1,5 +1,5 @@
 import type { LocalDate } from './dates';
-import type { EntryUnit, FoodKey } from './food';
+import { unitShortLabel, type EntryUnit, type FoodKey } from './food';
 import type { FoodSource } from './macros';
 import type { Meal } from './meals';
 import { rescaleTotals, sumTotals, type MacroTotals } from './nutrition';
@@ -42,5 +42,5 @@ export function groupByMeal<E extends Pick<Entry, 'meal' | 'createdAt'>>(
 }
 
 export function unitLabel(unit: EntryUnit): string {
-  return unit.kind === 'grams' ? 'g' : unit.label;
+  return unitShortLabel(unit);
 }

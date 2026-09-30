@@ -59,6 +59,22 @@ describe('FoodDetailContainer', () => {
     expect(screen.getByRole('region', { name: 'This amount' })).toHaveTextContent('143 kcal');
   });
 
+  it('logs in ounces', async () => {
+    const { repos, onAdded } = setup(rice);
+    await userEvent.selectOptions(screen.getByLabelText('Portion'), 'ounces');
+    expect(screen.getByLabelText('Ounces')).toHaveValue('3.5');
+    await userEvent.click(screen.getByRole('button', { name: 'Increase ounces' }));
+    expect(screen.getByRole('region', { name: 'This amount' })).toHaveTextContent('147 kcal'); // 4 oz = 113.4 g
+    await userEvent.click(screen.getByRole('button', { name: 'Add to log' }));
+    await waitFor(() => {
+      expect(onAdded).toHaveBeenCalledOnce();
+    });
+    expect((await firstValue(repos.entries.liveForDate(TODAY)))[0]).toMatchObject({
+      amount: 4,
+      unit: { kind: 'ounces' },
+    });
+  });
+
   it('offers no grams for a serving of unknown weight', () => {
     setup(adobo);
     expect(screen.getByLabelText('Portion')).toHaveDisplayValue('1 serving');

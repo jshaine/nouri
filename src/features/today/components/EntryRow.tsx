@@ -15,7 +15,8 @@ export interface EntryRowProps {
 }
 
 function amountText(entry: Entry): string {
-  if (entry.unit.kind === 'grams') return `${formatNumber(entry.amount)} g`;
+  if (entry.unit.kind !== 'portion')
+    return `${formatNumber(entry.amount)} ${unitLabel(entry.unit)}`;
   const unit = unitLabel(entry.unit);
   return entry.amount === 1 ? unit : `${formatNumber(entry.amount)} × ${unit}`;
 }

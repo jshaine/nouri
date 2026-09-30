@@ -61,6 +61,18 @@ describe('validateCustomFood', () => {
     expect(v.fiber).toBe(1.2);
   });
 
+  it('accepts the serving weight in ounces, storing grams', () => {
+    expect(
+      valueOf(input({ basis: 'serving', servingGrams: '6', servingUnit: 'oz' })).basis,
+    ).toEqual({
+      kind: 'serving',
+      servingGrams: 170.1,
+    });
+    expect(
+      errorsOf(input({ basis: 'serving', servingGrams: 'x', servingUnit: 'oz' })).servingGrams,
+    ).toMatch(/in ounces/);
+  });
+
   it('ignores a serving weight on per-100 g foods', () => {
     expect(valueOf(input({ servingGrams: 'abc' })).basis).toEqual({ kind: '100g' });
   });
