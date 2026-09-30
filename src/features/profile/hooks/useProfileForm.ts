@@ -44,7 +44,10 @@ export function useProfileForm(
 ) {
   const [drafts, setDrafts] = useState(() => draftsFrom(profile));
   const [errors, setErrors] = useState<Partial<Record<ProfileField, string>>>({});
+  // Show choices at once; the saved profile catches up through the live query.
+  const [pending, setPending] = useState<Partial<Profile>>({});
   const save = (patch: Partial<Profile>) => {
+    setPending((p) => ({ ...p, ...patch }));
     void repo.update(patch);
   };
   const fail = (field: ProfileField, error?: string) => {
@@ -57,6 +60,8 @@ export function useProfileForm(
       : [0];
 
   return {
+    /** The profile with not-yet-saved choices applied, for display. */
+    shown: { ...profile, ...pending },
     drafts,
     errors,
     paces,
