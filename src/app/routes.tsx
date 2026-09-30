@@ -1,6 +1,7 @@
-import { ChartColumn, ClipboardList, UserRound } from 'lucide-react';
+import { ChartColumn, ClipboardList } from 'lucide-react';
 import type { RouteObject } from 'react-router';
 import type { Repositories } from '@/data';
+import { ProfileContainer } from '@/features/profile';
 import { SettingsContainer } from '@/features/settings';
 import { TodayContainer } from '@/features/today';
 import { AppLayout } from './layout/AppLayout';
@@ -21,14 +22,7 @@ export function appRoutes(repos: Repositories): RouteObject[] {
             </Placeholder>
           ),
         },
-        {
-          path: 'profile',
-          element: (
-            <Placeholder title="Profile" icon={UserRound}>
-              Your profile, goal calculator and weight log.
-            </Placeholder>
-          ),
-        },
+        { path: 'profile', element: <ProfileContainer repos={repos} /> },
         { path: 'settings', element: <SettingsContainer repos={repos} /> },
         { path: '*', element: <NotFound /> },
       ],

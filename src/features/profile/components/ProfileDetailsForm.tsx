@@ -42,7 +42,7 @@ export function ProfileDetailsForm(props: ProfileDetailsFormProps) {
       <SegmentedControl
         label="Sex (for the calorie formula)"
         options={SEX_OPTIONS}
-        value={profile.sex ?? 'female'}
+        value={profile.sex}
         onChange={props.onSex}
       />
       <TextField
