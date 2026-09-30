@@ -1,3 +1,4 @@
+export * from './calcExplanation';
 export * from './calculator';
 export * from './customFood';
 export * from './dates';
