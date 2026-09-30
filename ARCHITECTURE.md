@@ -27,6 +27,21 @@ IndexedDB on the device, and the food database ships as `public/foods.json`.
 - `features/*/components/` are presentational: they receive props and emit
   callbacks. They cannot import `data`, containers or hooks.
 
+## Data
+
+- `src/data/db.ts` defines the Dexie schema. Changing it follows
+  [src/data/MIGRATIONS.md](src/data/MIGRATIONS.md): never edit a released
+  version, always add one with an upgrade.
+- `src/data/rows.ts` holds row shapes (plain JSON, so backups round-trip).
+  Repositories (`src/data/repositories/`) convert rows to domain types; nothing
+  else sees rows.
+- Reads that the UI shows are live queries (`Live<T>`). Screens consume them
+  with `useLive` from `@/ui`, a generic hook that knows nothing about Dexie.
+- Entries store a snapshot (name, source, totals) so editing or deleting a food
+  never changes past days.
+- Tests use `createTestRepositories()` from `src/data/testing.ts`: a fresh
+  fake-indexeddb database with a controllable clock and sequential ids.
+
 ## Design system
 
 Visual rules and tokens are documented in [DESIGN.md](DESIGN.md). Tokens live in
