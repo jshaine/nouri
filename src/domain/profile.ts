@@ -33,7 +33,7 @@ export const MISSING_LABEL: Readonly<Record<MissingField, string>> = {
   goalWeightKg: 'goal weight',
   activity: 'activity level',
   weeklyGoalKg: 'weekly goal',
-  weight: 'a current weight in the weight log',
+  weight: 'current weight (log it below)',
 };
 
 export function isWeeklyGoal(value: unknown): value is WeeklyGoal {

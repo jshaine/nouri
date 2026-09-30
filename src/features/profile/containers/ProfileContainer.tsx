@@ -1,8 +1,9 @@
-import { useId } from 'react';
-import type { ProfileRepository, WeightRepository } from '@/data';
+import { useId, useState } from 'react';
+import type { GoalRepository, ProfileRepository, WeightRepository } from '@/data';
 import { latestWeight, toLocalDate } from '@/domain';
+import { SuggestionContainer } from '@/features/goals';
 import { WeightLogContainer } from '@/features/weight';
-import { SegmentedControl, useDocumentTitle, useLive } from '@/ui';
+import { Button, SegmentedControl, useDocumentTitle, useLive } from '@/ui';
 import { ProfileDetailsContainer } from './ProfileDetailsContainer';
 import styles from './ProfileContainer.module.css';
 
@@ -15,6 +16,7 @@ export interface ProfileContainerProps {
   repos: {
     profile: Pick<ProfileRepository, 'live' | 'update'>;
     weights: Pick<WeightRepository, 'live' | 'set' | 'update' | 'remove'>;
+    goals: Pick<GoalRepository, 'live' | 'setFrom'>;
   };
   now?: () => Date;
 }
@@ -27,6 +29,9 @@ export function ProfileContainer({ repos, now = () => new Date() }: ProfileConta
   const p = profile.value;
   const detailsId = useId();
   const weightId = useId();
+  const suggestId = useId();
+  // Logging a new weight asks (never auto-applies) whether to update goals.
+  const [askToUpdate, setAskToUpdate] = useState(false);
 
   return (
     <div className={styles.screen}>
@@ -64,6 +69,35 @@ export function ProfileContainer({ repos, now = () => new Date() }: ProfileConta
             repo={repos.weights}
             units={p.units}
             goalKg={p.goalWeightKg}
+            today={today}
+            onLogged={() => {
+              setAskToUpdate(true);
+            }}
+          />
+        </section>
+      )}
+      {p && weights.value && (
+        <section className={styles.section} aria-labelledby={suggestId}>
+          <h2 id={suggestId} className={styles.title}>
+            Suggested goals
+          </h2>
+          {askToUpdate && (
+            <div className={styles.prompt} role="status">
+              <p>New weight logged. Update your goals? Here’s the new suggestion.</p>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setAskToUpdate(false);
+                }}
+              >
+                Not now
+              </Button>
+            </div>
+          )}
+          <SuggestionContainer
+            profile={p}
+            currentKg={latestWeight(weights.value)?.kg}
+            repo={repos.goals}
             today={today}
           />
         </section>
