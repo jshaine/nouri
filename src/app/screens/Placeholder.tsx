@@ -1,6 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { EmptyState } from '@/ui';
-import { useDocumentTitle } from '../layout/useDocumentTitle';
+import { EmptyState, useDocumentTitle } from '@/ui';
 
 interface PlaceholderProps {
   title: string;

@@ -9,8 +9,7 @@ export interface SourceBadgeProps {
 export function SourceBadge({ source }: SourceBadgeProps) {
   return (
     <span className={styles.badge} data-source={source} title={FOOD_SOURCE_DESCRIPTION[source]}>
-      <span className="visually-hidden">Source: </span>
-      {FOOD_SOURCE_LABEL[source]}
+      <span className="visually-hidden">Source:</span> {FOOD_SOURCE_LABEL[source]}
     </span>
   );
 }

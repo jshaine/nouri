@@ -1,10 +1,12 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import { createTestRepositories } from '@/data/testing';
 import { appRoutes } from './routes';
 
 function renderAt(path: string) {
-  const router = createMemoryRouter(appRoutes(), { initialEntries: [path] });
+  const { repos } = createTestRepositories();
+  const router = createMemoryRouter(appRoutes(repos), { initialEntries: [path] });
   render(<RouterProvider router={router} />);
   return router;
 }
