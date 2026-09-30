@@ -13,6 +13,11 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Chromium, WebKit and their system packages come preinstalled; the tag
+    # must match the pinned @playwright/test version in package.json.
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.0-noble
+      options: --user 1001
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -29,8 +34,6 @@ jobs:
         run: npm run test:coverage
       - name: Build
         run: npm run build
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium webkit
       - name: E2E (vite preview)
         run: npm run e2e
       - uses: actions/upload-artifact@v7
