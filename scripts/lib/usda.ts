@@ -52,8 +52,23 @@ function formatAmount(n: number): string {
   return Number.isInteger(n) ? String(n) : String(round(n, 2));
 }
 
+/** Tidies USDA's spacing: "3 oz ( 1 serving  )" → "3 oz (1 serving)". */
+function tidy(label: string): string {
+  return label
+    .replace(/\s+/g, ' ')
+    .replace(/\(\s+/g, '(')
+    .replace(/\s+\)/g, ')')
+    .replace(/\s+,/g, ',')
+    .trim();
+}
+
 /** A readable household measure: "1 cup, chopped", "2 slices", "1 medium". */
 export function portionLabel(p: RawPortion): string | null {
+  const label = rawLabel(p);
+  return label && tidy(label);
+}
+
+function rawLabel(p: RawPortion): string | null {
   const description = p.description.trim();
   if (description && !/quantity not specified/i.test(description)) {
     return /^\d/.test(description) ? description : `${formatAmount(p.amount || 1)} ${description}`;

@@ -62,7 +62,7 @@ describe('buildFoodPack (USDA fixtures)', () => {
   it('adds Filipino aliases and keeps fiber when known', async () => {
     const { pack } = await build();
     const byName = Object.fromEntries(pack.usda.map((f) => [f[1], f]));
-    expect(byName['Rice, white, long grain, cooked']?.[8]).toEqual(['kanin', 'sinaing', 'bigas']);
+    expect(byName['Rice, white, long grain, cooked']?.[8]).toEqual(['kanin', 'sinaing']);
     expect(byName['Fish, milkfish, raw']?.[8]).toEqual(['bangus', 'isda']);
     expect(byName['Bananas, raw']?.[6]).toBe(2.6);
     expect(byName['Fish, milkfish, raw']?.[6]).toBeNull();

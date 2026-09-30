@@ -6,7 +6,7 @@
 export const TAGALOG_ALIASES: readonly (readonly [RegExp, readonly string[]])[] = [
   [/^Rice, white, .*cooked/i, ['kanin', 'sinaing']],
   [/^Rice, brown, .*cooked/i, ['kanin', 'brown rice']],
-  [/^Rice, white/i, ['bigas']],
+  [/^Rice, white, .*raw/i, ['bigas']],
   [/^Rice, glutinous/i, ['malagkit']],
   [/^Egg, whole/i, ['itlog']],
   [/^Egg, duck/i, ['itlog ng pato', 'balut']],

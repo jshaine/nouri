@@ -21,6 +21,8 @@ describe('portionLabel', () => {
     [p({ description: '1 piece' }), '1 piece'],
     [p({ amount: 2, description: 'pieces' }), '2 pieces'],
     [p({ amount: 0, unit: 'cup' }), '1 cup'],
+    [p({ amount: 3, unit: 'oz', modifier: '( 1 serving  )' }), '3 oz, (1 serving)'],
+    [p({ description: '1 envelope  Swiss Miss (.53 oz) ' }), '1 envelope Swiss Miss (.53 oz)'],
   ])('%j → %s', (portion, label) => {
     expect(portionLabel(portion)).toBe(label);
   });
