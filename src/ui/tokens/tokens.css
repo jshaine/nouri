@@ -83,6 +83,7 @@
   --content-max: 35rem; /* 560 */
   --gutter: var(--space-4);
   --tabbar-height: 64px;
+  --rail-width: 96px;
   --fab-size: 56px;
 
   /* Safe areas */

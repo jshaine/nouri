@@ -1,0 +1,19 @@
+.shell {
+  min-height: 100dvh;
+}
+
+.main {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: calc(var(--space-4) + var(--safe-top)) calc(var(--gutter) + var(--safe-right))
+    calc(var(--tabbar-height) + var(--safe-bottom) + var(--space-12))
+    calc(var(--gutter) + var(--safe-left));
+}
+
+@media (min-width: 900px) {
+  .main {
+    padding-bottom: var(--space-12);
+    padding-left: calc(var(--rail-width) + var(--gutter));
+    max-width: calc(var(--content-max) + var(--rail-width) + 2 * var(--gutter));
+  }
+}

@@ -1,9 +1,20 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import type { Repositories } from '@/data';
+import { appRoutes } from './routes';
+import { useThemeSync } from './theme';
 
 // Dev-only component gallery; the import is dropped from production builds.
 const UiGallery = import.meta.env.DEV ? lazy(() => import('./dev/UiGallery')) : null;
 
-export function App() {
+export interface AppProps {
+  repos: Repositories;
+}
+
+export function App({ repos }: AppProps) {
+  useThemeSync(repos.settings);
+  const [router] = useState(() => createBrowserRouter(appRoutes()));
+
   if (UiGallery && window.location.hash === '#gallery') {
     return (
       <Suspense>
@@ -11,9 +22,5 @@ export function App() {
       </Suspense>
     );
   }
-  return (
-    <main>
-      <h1>Nouri</h1>
-    </main>
-  );
+  return <RouterProvider router={router} />;
 }
