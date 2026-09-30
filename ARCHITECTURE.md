@@ -27,6 +27,12 @@ IndexedDB on the device, and the food database ships as `public/foods.json`.
 - `features/*/components/` are presentational: they receive props and emit
   callbacks. They cannot import `data`, containers or hooks.
 
+## Design system
+
+Visual rules and tokens are documented in [DESIGN.md](DESIGN.md). Tokens live in
+`src/ui/tokens/` (CSS custom properties plus contrast tests); the theme
+override is applied by `src/app/theme`.
+
 ## Conventions
 
 - TypeScript strict; no `any`, no non-null assertions outside tests.
