@@ -7,6 +7,7 @@ export interface EntryRepository {
   liveForDate(date: LocalDate): Live<Entry[]>;
   /** Entries between two days, inclusive. */
   forRange(from: LocalDate, to: LocalDate): Promise<Entry[]>;
+  liveForRange(from: LocalDate, to: LocalDate): Live<Entry[]>;
   add(entry: NewEntry): Promise<Entry>;
   update(entry: Entry): Promise<void>;
   /** Deletes and returns the entry, so it can be restored (undo). */
@@ -29,16 +30,18 @@ export function entryToRow(entry: Entry): EntryRow {
 const byCreated = (a: EntryRow, b: EntryRow) => a.createdAt - b.createdAt;
 
 export function entryRepository({ db, now, newId }: RepoContext): EntryRepository {
+  const range = async (from: LocalDate, to: LocalDate) =>
+    (await db.entries.where('date').between(from, to, true, true).toArray())
+      .sort(byCreated)
+      .map(rowToEntry);
   return {
     liveForDate: (date) =>
       live(async () =>
         (await db.entries.where('date').equals(date).toArray()).sort(byCreated).map(rowToEntry),
       ),
 
-    async forRange(from, to) {
-      const rows = await db.entries.where('date').between(from, to, true, true).toArray();
-      return rows.sort(byCreated).map(rowToEntry);
-    },
+    forRange: (from, to) => range(from, to),
+    liveForRange: (from, to) => live(() => range(from, to)),
 
     async add(input) {
       const entry: Entry = { ...input, id: newId(), createdAt: now() };

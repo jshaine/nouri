@@ -33,6 +33,10 @@ describe('entryRepository', () => {
       await repos.entries.add(entry({ date: day(d) }));
     const range = await repos.entries.forRange(day('2026-09-28'), day('2026-09-30'));
     expect(range.map((e) => e.date)).toEqual(['2026-09-28', '2026-09-30']);
+    const liveRange = await firstValue(
+      repos.entries.liveForRange(day('2026-09-28'), day('2026-09-30')),
+    );
+    expect(liveRange.map((e) => e.date)).toEqual(['2026-09-28', '2026-09-30']);
   });
 
   it('updates and rejects updates to missing entries', async () => {

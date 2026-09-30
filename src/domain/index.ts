@@ -7,6 +7,7 @@ export * from './food';
 export * from './foodPack';
 export * from './goalInput';
 export * from './goals';
+export * from './history';
 export * from './macros';
 export * from './meals';
 export * from './numbers';

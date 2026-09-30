@@ -5,6 +5,8 @@ import { live, type Live } from '../live';
 /** Exercise calories per day (only used when exercise calories are turned on). */
 export interface ExerciseRepository {
   liveForDate(date: LocalDate): Live<number>;
+  /** kcal by day, for days between two dates (inclusive) that have exercise. */
+  liveForRange(from: LocalDate, to: LocalDate): Live<Record<string, number>>;
   /** 0 clears the day. */
   set(date: LocalDate, kcal: number): Promise<void>;
 }
@@ -13,6 +15,15 @@ export function exerciseRepository({ db, newId }: RepoContext): ExerciseReposito
   return {
     liveForDate: (date) =>
       live(async () => (await db.exercise.where('date').equals(date).first())?.kcal ?? 0),
+    liveForRange: (from, to) =>
+      live(async () =>
+        Object.fromEntries(
+          (await db.exercise.where('date').between(from, to, true, true).toArray()).map((r) => [
+            r.date,
+            r.kcal,
+          ]),
+        ),
+      ),
     async set(date, kcal) {
       await db.transaction('rw', db.exercise, async () => {
         const existing = await db.exercise.where('date').equals(date).first();
