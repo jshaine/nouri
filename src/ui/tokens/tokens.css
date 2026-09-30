@@ -1,0 +1,159 @@
+/*
+ * Nouri design tokens: "Daily Facts".
+ * One spacing scale, one type scale, one color per macro. Components read
+ * only these custom properties; never raw values.
+ */
+
+:root {
+  /* Color: light (label paper) */
+  --color-paper: #f5f0e6;
+  --color-card: #fffdf8;
+  --color-ink: #1c1b18;
+  --color-ink-muted: #5e5a52;
+  --color-track: #e4ddd0;
+  --color-hairline: #d8d0c1;
+  --color-on-ink: #f5f0e6;
+  --color-scrim: rgb(28 27 24 / 0.45);
+
+  --color-protein: #1d6a86;
+  --color-carbs: #8c5a00;
+  --color-fat: #b4462f;
+  --color-accent: #2f6b3a;
+  --color-focus: #1d6a86;
+
+  /* Neutral states (going over a goal is never red) */
+  --color-danger: #9b2c2c;
+
+  color-scheme: light;
+
+  /* Typography */
+  --font-sans:
+    'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --stretch-condensed: 70%;
+  --stretch-semi: 85%;
+  --stretch-normal: 100%;
+
+  --text-xs: 0.75rem; /* 12 */
+  --text-sm: 0.875rem; /* 14 */
+  --text-md: 1rem; /* 16 */
+  --text-lg: 1.25rem; /* 20 */
+  --text-xl: 1.5rem; /* 24 */
+  --text-2xl: 2rem; /* 32 */
+  --text-3xl: 2.5rem; /* 40 */
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.3;
+  --leading-body: 1.5;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+  --weight-heavy: 800;
+  --weight-black: 900;
+
+  /* Spacing: 4px base */
+  --space-1: 0.25rem; /* 4 */
+  --space-2: 0.5rem; /* 8 */
+  --space-3: 0.75rem; /* 12 */
+  --space-4: 1rem; /* 16 */
+  --space-6: 1.5rem; /* 24 */
+  --space-8: 2rem; /* 32 */
+  --space-12: 3rem; /* 48 */
+
+  /* Label rules (the nutrition-facts dividers) */
+  --rule-hair: 1px;
+  --rule-medium: 4px;
+  --rule-heavy: 8px;
+  --label-border: 2px;
+
+  /* Shape */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-sheet: 16px;
+  --radius-pill: 999px;
+
+  /* Sizing */
+  --tap-min: 44px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --bar-height: 6px;
+  --split-height: 10px;
+  --content-max: 35rem; /* 560 */
+  --gutter: var(--space-4);
+  --tabbar-height: 64px;
+  --fab-size: 56px;
+
+  /* Safe areas */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* Elevation: flat, except floating sheets */
+  --shadow-sheet: 0 -4px 24px rgb(28 27 24 / 0.12);
+
+  /* Motion */
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-sheet: 240ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Layers */
+  --z-tabbar: 10;
+  --z-fab: 20;
+  --z-sheet: 30;
+  --z-toast: 40;
+}
+
+/* Dark (inverted label). Applies when the OS asks for it, unless the user
+   forced light in Settings; `data-theme="dark"` forces it either way. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-paper: #141311;
+    --color-card: #1d1c19;
+    --color-ink: #f2ede3;
+    --color-ink-muted: #ada79b;
+    --color-track: #34322d;
+    --color-hairline: #3d3a34;
+    --color-on-ink: #141311;
+    --color-scrim: rgb(0 0 0 / 0.6);
+    --color-protein: #6bbad6;
+    --color-carbs: #e3ae4a;
+    --color-fat: #ee8c73;
+    --color-accent: #86c28f;
+    --color-focus: #6bbad6;
+    --color-danger: #f19999;
+    --shadow-sheet: 0 -4px 24px rgb(0 0 0 / 0.5);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-paper: #141311;
+  --color-card: #1d1c19;
+  --color-ink: #f2ede3;
+  --color-ink-muted: #ada79b;
+  --color-track: #34322d;
+  --color-hairline: #3d3a34;
+  --color-on-ink: #141311;
+  --color-scrim: rgb(0 0 0 / 0.6);
+  --color-protein: #6bbad6;
+  --color-carbs: #e3ae4a;
+  --color-fat: #ee8c73;
+  --color-accent: #86c28f;
+  --color-focus: #6bbad6;
+  --color-danger: #f19999;
+  --shadow-sheet: 0 -4px 24px rgb(0 0 0 / 0.5);
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-sheet: 0ms;
+  }
+}

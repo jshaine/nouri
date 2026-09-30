@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import '@/ui/tokens/index.css';
 import { App } from '@/app';
 import { registerServiceWorker } from '@/app/pwa';
 

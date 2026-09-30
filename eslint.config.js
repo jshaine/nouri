@@ -74,9 +74,16 @@ export default tseslint.config(
       ),
       'no-restricted-globals': [
         'error',
-        ...['window', 'document', 'navigator', 'localStorage', 'indexedDB', 'fetch', 'self'].map(
-          (name) => ({ name, message: 'domain is pure TypeScript: no browser APIs.' }),
-        ),
+        ...[
+          'window',
+          'document',
+          'navigator',
+          'localStorage',
+          'indexedDB',
+          'fetch',
+          'self',
+          'process',
+        ].map((name) => ({ name, message: 'domain is pure TypeScript: no browser APIs.' })),
       ],
     },
   },
