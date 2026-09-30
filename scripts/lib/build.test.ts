@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { decodeFoodPack, type FoodPack } from '../../src/domain/index.ts';
@@ -6,16 +6,22 @@ import { buildFoodPack, formatReport } from './build';
 
 const FIXTURES = join(process.cwd(), 'scripts/fixtures/usda');
 
-async function build(extra?: Parameters<typeof buildFoodPack>[0]['extra']) {
-  const outFile = join(mkdtempSync(join(tmpdir(), 'nouri-foods-')), 'foods.json');
+async function build(fnriFile?: string) {
+  const dir = mkdtempSync(join(tmpdir(), 'nouri-foods-'));
+  const outFile = join(dir, 'foods.json');
+  const fnriOutFile = join(dir, 'foods-fnri.json');
   const report = await buildFoodPack({
     usdaDir: FIXTURES,
     outFile,
+    fnriFile,
+    fnriOutFile,
     now: () => new Date('2026-09-30T00:00:00Z'),
-    extra,
   });
   const pack = JSON.parse(readFileSync(outFile, 'utf8')) as FoodPack;
-  return { report, pack };
+  const fnriPack = existsSync(fnriOutFile)
+    ? (JSON.parse(readFileSync(fnriOutFile, 'utf8')) as FoodPack)
+    : undefined;
+  return { report, pack, fnriPack, fnriOutFile };
 }
 
 describe('buildFoodPack (USDA fixtures)', () => {
@@ -80,17 +86,37 @@ describe('buildFoodPack (USDA fixtures)', () => {
     expect(formatReport(report)).toMatch(/Foods: 6 \(USDA 6, FNRI 0\)[\s\S]*gzip$/);
   });
 
-  it('merges extra FNRI foods and credits them', async () => {
-    const { pack, report } = await build({
-      fnri: [
-        ['B2', 'Sinigang na baboy', 60, 5, 3, 3, null, [], []],
-        ['A1', 'Adobong manok', 200, 20, 2, 12, null, [], []],
-      ],
-      credit: 'FNRI PhilFCT',
-    });
-    expect(pack.fnri.map((f) => f[1])).toEqual(['Adobong manok', 'Sinigang na baboy']);
-    expect(pack.sources.fnri).toBe('FNRI PhilFCT');
-    expect(report.counts.fnri).toBe(2);
+  it('skips FNRI when there is no CSV, and says so', async () => {
+    const { report, fnriPack } = await build(join(tmpdir(), 'no-philfct.csv'));
+    expect(report.fnri).toBeNull();
+    expect(fnriPack).toBeUndefined();
+    expect(formatReport(report)).toMatch(/philfct.csv not found, skipped/);
+  });
+
+  it('writes FNRI foods to their own file, never into foods.json', async () => {
+    const { report, pack, fnriPack } = await build(
+      join(process.cwd(), 'scripts/fixtures/fnri/philfct.csv'),
+    );
+    expect(pack.fnri).toEqual([]);
+    expect(pack.sources).not.toHaveProperty('fnri');
+    expect(fnriPack?.usda).toEqual([]);
+    expect(fnriPack?.sources.fnri).toMatch(/used with permission/);
+    expect(fnriPack?.fnri.map((f) => f[1])).toEqual([
+      'Adobong manok (sample)',
+      'Pandesal (sample)',
+      'Sinigang na baboy (sample)',
+      'Suman (sample)',
+    ]);
+    expect(report.counts.fnri).toBe(4);
+    expect(formatReport(report)).toMatch(/FNRI: 4 foods, 4 problem\(s\)/);
+  });
+
+  it('removes a stale FNRI file once the CSV is gone', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'nouri-foods-'));
+    const fnriOutFile = join(dir, 'foods-fnri.json');
+    writeFileSync(fnriOutFile, '{}');
+    await buildFoodPack({ usdaDir: FIXTURES, outFile: join(dir, 'foods.json'), fnriOutFile });
+    expect(existsSync(fnriOutFile)).toBe(false);
   });
 
   it('explains where to get the data when it is missing', async () => {
