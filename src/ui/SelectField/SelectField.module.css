@@ -1,0 +1,23 @@
+.control {
+  position: relative;
+}
+
+.select {
+  flex: 1;
+  align-self: stretch;
+  min-width: 0;
+  padding: 0 calc(var(--space-3) + var(--icon-md)) 0 var(--space-3);
+  border: 0;
+  background: transparent;
+  font-size: var(--text-md);
+  appearance: none;
+  outline: none;
+}
+
+.chevron {
+  position: absolute;
+  right: var(--space-3);
+  width: var(--icon-md);
+  height: var(--icon-md);
+  pointer-events: none;
+}

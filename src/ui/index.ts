@@ -17,3 +17,4 @@ export {
   type SegmentOption,
   type SegmentedControlProps,
 } from './SegmentedControl/SegmentedControl';
+export { SelectField, type SelectFieldProps, type SelectOption } from './SelectField/SelectField';
