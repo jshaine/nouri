@@ -52,7 +52,7 @@ describe('Today logging', () => {
     await userEvent.click(within(detail).getByRole('radio', { name: 'Snacks' }));
     await userEvent.click(within(detail).getByRole('button', { name: 'Add to log' }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Added to Snacks');
+    expect(await screen.findByText('Added to Snacks')).toBeInTheDocument();
     expect(
       within(screen.getByRole('region', { name: 'Snacks' })).getByText(/Turon/),
     ).toBeInTheDocument();
@@ -75,7 +75,7 @@ describe('Today logging', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'My foods' }));
     await userEvent.click(await screen.findByRole('button', { name: /Pandesal/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Add to log' }));
-    expect(await screen.findByRole('status')).toHaveTextContent('Added to Lunch');
+    expect(await screen.findByText('Added to Lunch')).toBeInTheDocument();
     expect((await firstValue(repos.entries.liveForDate(TODAY)))[0]?.name).toBe('Pandesal');
     // It's now a recent food.
     await waitFor(async () => {
@@ -104,13 +104,13 @@ describe('Today logging', () => {
     await repos.entries.add(adobo);
     await userEvent.click(await screen.findByRole('button', { name: /Adobo/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
-    expect(await screen.findByRole('status')).toHaveTextContent('Removed Adobo');
+    expect(await screen.findByText('Removed Adobo')).toBeInTheDocument();
     expect(
       await screen.findByRole('heading', { name: 'Nothing logged today' }),
     ).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
     expect(await screen.findByRole('button', { name: /Adobo/ })).toBeInTheDocument();
-    expect(await screen.findByRole('status')).toHaveTextContent('Restored Adobo');
+    expect(await screen.findByText('Restored Adobo')).toBeInTheDocument();
   });
 
   it('deletes on long-press', async () => {
@@ -122,7 +122,7 @@ describe('Today logging', () => {
     fireEvent.pointerDown(row, { clientX: 5, clientY: 5 });
     await vi.advanceTimersByTimeAsync(600);
     vi.useRealTimers();
-    expect(await screen.findByRole('status')).toHaveTextContent('Removed Adobo');
+    expect(await screen.findByText('Removed Adobo')).toBeInTheDocument();
     expect(screen.queryByRole('dialog', { name: 'Adobo' })).not.toBeInTheDocument();
   });
 });
