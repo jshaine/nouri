@@ -13,7 +13,7 @@ export function portionKind(food: Food): 'grams' | 'servings' {
   return supportsGrams(food) ? 'grams' : 'servings';
 }
 
-/** Validates a custom portion like "1 cup kanin" = 160 g. */
+/** Validates a custom portion like "1 cup rice" = 160 g. */
 export function validatePortion(
   food: Food,
   label: string,
@@ -22,7 +22,7 @@ export function validatePortion(
   const errors: PortionErrors = {};
   const name = label.trim().replace(/\s+/g, ' ');
   const kind = portionKind(food);
-  if (!name) errors.label = 'Name the portion, like “1 cup kanin” or “1 bowl”.';
+  if (!name) errors.label = 'Name the portion, like “1 cup rice” or “1 bowl”.';
   else if (name.length > PORTION_LABEL_MAX)
     errors.label = `Keep the name under ${PORTION_LABEL_MAX} characters.`;
   else if (name.toLowerCase() === 'grams')

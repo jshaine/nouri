@@ -40,7 +40,7 @@ export function SearchTab({ repos, onSelect, onCreate }: SearchTabProps) {
         autoComplete="off"
         autoCapitalize="none"
         spellCheck={false}
-        placeholder="kanin, chicken breast, saging"
+        placeholder="rice, chicken breast, banana"
         value={query}
         onChange={setQuery}
       />
@@ -80,7 +80,7 @@ export function SearchTab({ repos, onSelect, onCreate }: SearchTabProps) {
               </Button>
             }
           >
-            Try another spelling or a simpler word, like “rice” or “manok”.
+            Try another spelling or a simpler word, like “rice” or “chicken”.
           </EmptyState>
         )}
       </div>

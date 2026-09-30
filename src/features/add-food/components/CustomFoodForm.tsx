@@ -65,7 +65,7 @@ export function CustomFoodForm({
         value={value.name}
         error={errors.name}
         autoComplete="off"
-        placeholder="Adobong manok"
+        placeholder="Chicken adobo"
         onChange={(v) => {
           onChange('name', v);
         }}
@@ -76,7 +76,7 @@ export function CustomFoodForm({
         value={value.aliases}
         hint="Other names to search by, separated by commas."
         autoComplete="off"
-        placeholder="chicken adobo, adobo"
+        placeholder="adobo, braised chicken"
         onChange={(v) => {
           onChange('aliases', v);
         }}
