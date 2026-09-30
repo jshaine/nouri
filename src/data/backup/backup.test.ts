@@ -55,7 +55,9 @@ describe('backup', () => {
       schemaVersion: SCHEMA_VERSION,
       exportedAt: '2026-10-01T00:00:00.000Z',
     });
-    const counts = Object.fromEntries(Object.entries(file.tables).map(([k, v]) => [k, v.length]));
+    const counts = Object.fromEntries(
+      Object.entries(file.tables).map(([k, v]) => [k, (v as unknown[]).length]),
+    );
     expect(counts).toEqual({
       customFoods: 1,
       portionOverrides: 1,
