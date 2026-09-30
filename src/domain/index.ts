@@ -1,3 +1,4 @@
+export * from './calculator';
 export * from './customFood';
 export * from './dates';
 export * from './entries';
@@ -14,3 +15,4 @@ export * from './portionInput';
 export * from './progress';
 export * from './search';
 export * from './theme';
+export * from './units';
