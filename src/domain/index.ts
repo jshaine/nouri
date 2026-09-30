@@ -13,6 +13,7 @@ export * from './nutrition';
 export * from './portionChoice';
 export * from './portionInput';
 export * from './profile';
+export * from './profileInput';
 export * from './progress';
 export * from './search';
 export * from './theme';
