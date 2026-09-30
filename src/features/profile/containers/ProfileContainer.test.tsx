@@ -109,3 +109,30 @@ describe('ProfileContainer', () => {
     );
   });
 });
+
+describe('update prompt', () => {
+  it('asks to update goals after a new weight, and can be dismissed', async () => {
+    const { repos } = createTestRepositories();
+    await repos.profile.update({
+      sex: 'female',
+      birthDate: '1996-05-01' as LocalDate,
+      heightCm: 160,
+      goalWeightKg: 58,
+      activity: 'light',
+      weeklyGoalKg: -0.5,
+    });
+    render(<ProfileContainer repos={repos} now={NOW} />);
+    expect(
+      await screen.findByText('Add your current weight (log it below) to see suggested goals.'),
+    ).toBeInTheDocument();
+    await userEvent.type(screen.getByRole('textbox', { name: 'Weight' }), '65');
+    await userEvent.click(screen.getByRole('button', { name: 'Log weight' }));
+    expect(
+      await screen.findByText('New weight logged. Update your goals? Here’s the new suggestion.'),
+    ).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Use these goals' })).toBeInTheDocument();
+    expect(await repos.goals.all()).toEqual([]); // never applied on its own
+    await userEvent.click(screen.getByRole('button', { name: 'Not now' }));
+    expect(screen.queryByText(/New weight logged/)).not.toBeInTheDocument();
+  });
+});
