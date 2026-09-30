@@ -8,7 +8,10 @@ type Phase =
   | { kind: 'confirm-replace'; check: BackupCheck }
   | { kind: 'busy' };
 
-export type BackupMessage = { kind: 'ok' | 'error'; text: string };
+export interface BackupMessage {
+  kind: 'ok' | 'error';
+  text: string;
+}
 
 /** Saves the file with the share sheet on phones, or downloads it elsewhere. */
 async function deliver(

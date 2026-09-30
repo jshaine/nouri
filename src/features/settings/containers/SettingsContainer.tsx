@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import type { GoalRepository, ProfileRepository, SettingsRepository } from '@/data';
+import type {
+  BackupRepository,
+  GoalRepository,
+  ProfileRepository,
+  SettingsRepository,
+} from '@/data';
 import { THEME_PREFERENCES, type ThemePreference } from '@/domain';
 import { BackupContainer } from '@/features/backup';
 import { GoalsContainer } from '@/features/goals';
@@ -24,6 +29,7 @@ export interface SettingsContainerProps {
     goals: Pick<GoalRepository, 'live' | 'setFrom'>;
     settings: Pick<SettingsRepository, 'live' | 'set'>;
     profile: Pick<ProfileRepository, 'live' | 'update'>;
+    backup: BackupRepository;
   };
   now?: () => Date;
   version?: string;

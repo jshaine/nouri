@@ -1,13 +1,18 @@
 import { Download, Upload } from 'lucide-react';
 import { useId, type ChangeEvent } from 'react';
-import type { BackupCheck } from '@/data';
 import { Button } from '@/ui';
 import styles from './BackupPanel.module.css';
+
+/** What a checked backup file contains (from the container). */
+export interface BackupSummary {
+  counts: { entries: number; customFoods: number; weights: number; goals: number };
+  skipped: number;
+}
 
 export interface BackupPanelProps {
   lastBackup: string | undefined;
   busy: boolean;
-  checked?: BackupCheck | undefined;
+  checked?: BackupSummary | undefined;
   confirmingReplace: boolean;
   message?: { kind: 'ok' | 'error'; text: string } | undefined;
   onExport: () => void;
@@ -18,7 +23,7 @@ export interface BackupPanelProps {
   onCancel: () => void;
 }
 
-function describe(c: BackupCheck): string {
+function describe(c: BackupSummary): string {
   const n = c.counts;
   const parts = [
     `${n.entries} ${n.entries === 1 ? 'entry' : 'entries'}`,
