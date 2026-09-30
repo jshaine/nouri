@@ -4,6 +4,10 @@
 }
 
 .link {
+  /* A 44px tap area around an inline link, without shifting the label. */
+  display: inline-block;
+  margin: calc(var(--space-3) * -1) 0;
+  padding: var(--space-3) 0;
   color: var(--color-ink);
   font-weight: var(--weight-bold);
   text-underline-offset: 3px;
