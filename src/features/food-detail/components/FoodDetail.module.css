@@ -51,3 +51,28 @@
     grid-template-columns: 1fr;
   }
 }
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.actions > :last-child {
+  flex: 1;
+}
+
+.portionForm {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-3);
+  border: var(--rule-hair) solid var(--color-ink-muted);
+  border-radius: var(--radius-md);
+}
+
+.portionLegend {
+  padding: 0 var(--space-1);
+  font-weight: var(--weight-bold);
+}

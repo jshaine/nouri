@@ -41,12 +41,14 @@ export function useFoodDetail({
 }: Options) {
   const options = useMemo(() => unitOptions(food, overrides), [food, overrides]);
   const portions = useMemo(() => availablePortions(food, overrides), [food, overrides]);
-  const [choice, setChoice] = useState(() => defaultChoice(food, overrides));
+  const [picked, setChoice] = useState(() => defaultChoice(food, overrides));
+  // If the picked portion isn't available (yet), fall back instead of failing.
+  const choice = optionForUnit(options, picked.unit) ? picked : defaultChoice(food, overrides);
   const [meal, setMeal] = useState<Meal>(() => initialMeal ?? mealForTime(now()));
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string>();
 
-  const unitId = optionForUnit(options, choice.unit)?.id ?? options[0]?.id ?? '';
+  const unitId = optionForUnit(options, choice.unit)?.id ?? '';
   const totals = nutrientsFor(food, portions, choice.amount, choice.unit);
 
   const onUnitChange = (id: string) => {
@@ -92,5 +94,11 @@ export function useFoodDetail({
     adding,
     error,
     onAdd,
+    /** Current selection, for prefilling "Save portion". */
+    selection: { portions, amount: choice.amount, unit: choice.unit },
+    /** Switch to a portion (e.g. one just saved), one of it. */
+    selectPortion: (label: string) => {
+      setChoice({ unit: { kind: 'portion', label }, amount: 1 });
+    },
   };
 }

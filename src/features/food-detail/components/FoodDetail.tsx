@@ -1,4 +1,5 @@
 import { Star } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { MEAL_NAME, MEALS, type FoodSource, type MacroTotals, type Meal } from '@/domain';
 import {
   Button,
@@ -31,6 +32,10 @@ export interface FoodDetailProps {
   /** undefined hides the star. */
   favorite?: boolean | undefined;
   onToggleFavorite?: () => void;
+  /** Shows "Save portion" next to "Add to log". */
+  onStartSavePortion?: (() => void) | undefined;
+  /** The open Save portion form, if any. */
+  portionForm?: ReactNode;
   adding?: boolean;
   error?: string | undefined;
 }
@@ -88,9 +93,15 @@ export function FoodDetail(props: FoodDetailProps) {
           {error}
         </p>
       )}
-      <Button variant="primary" block disabled={adding || amount <= 0} onClick={props.onAdd}>
-        {adding ? 'Adding…' : 'Add to log'}
-      </Button>
+      {props.portionForm}
+      <div className={styles.actions}>
+        {props.onStartSavePortion && !props.portionForm && (
+          <Button onClick={props.onStartSavePortion}>Save portion</Button>
+        )}
+        <Button variant="primary" disabled={adding || amount <= 0} onClick={props.onAdd}>
+          {adding ? 'Adding…' : 'Add to log'}
+        </Button>
+      </div>
     </div>
   );
 }

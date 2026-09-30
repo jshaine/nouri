@@ -1,6 +1,12 @@
 import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
-import type { CustomFoodRepository, EntryRepository, FoodDatabase, UsageRepository } from '@/data';
+import type {
+  CustomFoodRepository,
+  EntryRepository,
+  FoodDatabase,
+  PortionOverrideRepository,
+  UsageRepository,
+} from '@/data';
 import type { Entry, Food, LocalDate, Meal } from '@/domain';
 import { FoodDetailContainer } from '@/features/food-detail';
 import { Button, Sheet, Tabs } from '@/ui';
@@ -28,6 +34,7 @@ export interface AddFoodSheetProps {
     customFoods: Pick<CustomFoodRepository, 'live' | 'get' | 'create' | 'update'>;
     entries: Pick<EntryRepository, 'add'>;
     usage: Pick<UsageRepository, 'liveRecents' | 'liveFavorites' | 'isFavorite' | 'setFavorite'>;
+    portionOverrides: Pick<PortionOverrideRepository, 'live' | 'save'>;
   };
   onAdded: (entry: Entry) => void;
 }
@@ -77,6 +84,7 @@ export function AddFoodSheet({
             initialMeal={defaultMeal}
             repo={repos.entries}
             usage={repos.usage}
+            portions={repos.portionOverrides}
             onAdded={added}
           />
         </>
