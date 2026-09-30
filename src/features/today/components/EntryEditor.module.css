@@ -1,0 +1,32 @@
+.editor {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.amount {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.unit {
+  font-weight: var(--weight-bold);
+}
+
+.preview {
+  padding: var(--space-2) 0;
+  border-top: var(--rule-heavy) solid var(--color-ink);
+  border-bottom: var(--rule-hair) solid var(--color-ink);
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}

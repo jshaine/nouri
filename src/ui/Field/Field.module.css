@@ -1,6 +1,8 @@
 .field {
   display: grid;
   gap: var(--space-1);
+  /* Let fields shrink inside grids (e.g. the three macro inputs). */
+  min-width: 0;
 }
 
 .label {
@@ -29,6 +31,7 @@
 .input {
   flex: 1;
   align-self: stretch;
+  width: 100%;
   min-width: 0;
   padding: 0 var(--space-3);
   border: 0;

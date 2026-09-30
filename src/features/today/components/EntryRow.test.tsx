@@ -30,11 +30,18 @@ describe('EntryRow', () => {
     expect(screen.getByRole('listitem')).toHaveTextContent(text);
   });
 
-  it('shows name, source and calories, and opens when interactive', async () => {
+  it('shows name, source and calories, and presses when interactive', async () => {
     const onOpen = vi.fn();
     render(
       <ul>
-        <EntryRow entry={base} onOpen={onOpen} />
+        <EntryRow
+          entry={base}
+          press={{
+            onClick: () => {
+              onOpen(base);
+            },
+          }}
+        />
       </ul>,
     );
     const button = screen.getByRole('button', {

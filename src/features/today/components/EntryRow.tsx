@@ -1,11 +1,17 @@
+import type { ButtonHTMLAttributes } from 'react';
 import { formatNumber, unitLabel, type Entry } from '@/domain';
 import { SourceBadge } from '@/ui';
 import styles from './MealSection.module.css';
 
+export type EntryPressProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'type' | 'className' | 'children'
+>;
+
 export interface EntryRowProps {
   entry: Entry;
-  /** Omit for a read-only row. */
-  onOpen?: ((entry: Entry) => void) | undefined;
+  /** Tap / long-press handlers; omit for a read-only row. */
+  press?: EntryPressProps | undefined;
 }
 
 function amountText(entry: Entry): string {
@@ -14,8 +20,8 @@ function amountText(entry: Entry): string {
   return entry.amount === 1 ? unit : `${formatNumber(entry.amount)} × ${unit}`;
 }
 
-/** One logged item. With `onOpen`, tapping it opens the editor. */
-export function EntryRow({ entry, onOpen }: EntryRowProps) {
+/** One logged item: name, source, amount, macros and calories. */
+export function EntryRow({ entry, press }: EntryRowProps) {
   const { p, c, f, kcal } = entry.totals;
   const content = (
     <>
@@ -34,14 +40,8 @@ export function EntryRow({ entry, onOpen }: EntryRowProps) {
   );
   return (
     <li>
-      {onOpen ? (
-        <button
-          type="button"
-          className={styles.entry}
-          onClick={() => {
-            onOpen(entry);
-          }}
-        >
+      {press ? (
+        <button type="button" className={styles.entry} {...press}>
           {content}
         </button>
       ) : (

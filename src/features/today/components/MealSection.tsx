@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { formatNumber, MEAL_NAME, totalsOf, type Entry, type Meal } from '@/domain';
 import { EntryRow } from './EntryRow';
 import styles from './MealSection.module.css';
@@ -5,11 +6,12 @@ import styles from './MealSection.module.css';
 export interface MealSectionProps {
   meal: Meal;
   entries: readonly Entry[];
-  onOpenEntry?: ((entry: Entry) => void) | undefined;
+  /** Renders each row; defaults to a read-only EntryRow. */
+  renderEntry?: (entry: Entry) => ReactNode;
 }
 
 /** A meal's entries with its calorie total. */
-export function MealSection({ meal, entries, onOpenEntry }: MealSectionProps) {
+export function MealSection({ meal, entries, renderEntry }: MealSectionProps) {
   const total = totalsOf(entries).kcal;
   return (
     <section className={styles.meal} aria-label={MEAL_NAME[meal]}>
@@ -21,9 +23,7 @@ export function MealSection({ meal, entries, onOpenEntry }: MealSectionProps) {
       </header>
       {entries.length > 0 && (
         <ul className={styles.list}>
-          {entries.map((e) => (
-            <EntryRow key={e.id} entry={e} onOpen={onOpenEntry} />
-          ))}
+          {entries.map((e) => (renderEntry ? renderEntry(e) : <EntryRow key={e.id} entry={e} />))}
         </ul>
       )}
     </section>
