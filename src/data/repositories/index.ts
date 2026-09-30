@@ -5,12 +5,15 @@ import { customFoodRepository, type CustomFoodRepository } from './customFoods';
 import { entryRepository, type EntryRepository } from './entries';
 import { goalRepository, type GoalRepository } from './goals';
 import { settingsRepository, type SettingsRepository } from './settings';
+import { usageRepository, type UsageRepository } from './usage';
 
 export interface Repositories {
   customFoods: CustomFoodRepository;
   entries: EntryRepository;
   goals: GoalRepository;
   settings: SettingsRepository;
+  /** Recently logged and favorite foods. */
+  usage: UsageRepository;
   /** Bundled USDA/FNRI foods (read-only, searchable). */
   foods: FoodDatabase;
 }
@@ -22,6 +25,7 @@ export function createRepositories(ctx: RepoContext, foods: FoodDatabase): Repos
     entries: entryRepository(ctx),
     goals: goalRepository(ctx),
     settings: settingsRepository(ctx),
+    usage: usageRepository(ctx),
   };
 }
 
@@ -33,6 +37,13 @@ export function openRepositories(
   return createRepositories(defaultContext(db), foods);
 }
 
-export type { CustomFoodRepository, EntryRepository, GoalRepository, SettingsRepository };
+export type {
+  CustomFoodRepository,
+  EntryRepository,
+  GoalRepository,
+  SettingsRepository,
+  UsageRepository,
+};
+export { RECENT_LIMIT, type FoodUsage } from './usage';
 export type { GoalInput } from './goals';
 export { DEFAULT_SETTINGS, type Settings } from './settings';
