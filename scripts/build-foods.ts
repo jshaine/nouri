@@ -11,6 +11,8 @@ try {
   const report = await buildFoodPack({
     usdaDir: `${root}data/raw/usda`,
     outFile: `${root}public/foods.json`,
+    fnriFile: `${root}data/raw/fnri/philfct.csv`,
+    fnriOutFile: `${root}public/foods-fnri.json`,
   });
   console.log(formatReport(report));
   if (report.overBudget) process.exitCode = 1;
