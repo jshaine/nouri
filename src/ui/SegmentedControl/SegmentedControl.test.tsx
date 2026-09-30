@@ -37,6 +37,16 @@ describe('SegmentedControl', () => {
     expect(screen.getByRole('radio', { name: 'Lunch' })).toBeChecked();
   });
 
+  it('can start with nothing chosen', async () => {
+    const onChange = vi.fn();
+    render(
+      <SegmentedControl label="Sex" options={OPTIONS} value={undefined} onChange={onChange} />,
+    );
+    expect(screen.getAllByRole('radio').some((r) => (r as HTMLInputElement).checked)).toBe(false);
+    await userEvent.click(screen.getByRole('radio', { name: 'Breakfast' }));
+    expect(onChange).toHaveBeenCalledWith('breakfast');
+  });
+
   it('can hide the legend visually but keep it for screen readers', () => {
     render(<Controlled hideLabel />);
     expect(screen.getByText('Meal')).toHaveClass('visually-hidden');

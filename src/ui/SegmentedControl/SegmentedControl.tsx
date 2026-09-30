@@ -10,7 +10,8 @@ export interface SegmentedControlProps<T extends string> {
   /** Visible group label (the fieldset legend). */
   label: string;
   options: readonly SegmentOption<T>[];
-  value: T;
+  /** undefined means nothing is chosen yet. */
+  value: T | undefined;
   onChange: (value: T) => void;
   /** Hide the legend visually (it stays for screen readers). */
   hideLabel?: boolean;
