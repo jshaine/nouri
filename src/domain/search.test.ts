@@ -38,6 +38,7 @@ describe('createFoodSearch', () => {
     expect(search.search('chiken brest')[0]?.key).toBe('usda:3');
     expect(search.search('manok')[0]?.key).toBe('usda:3');
     expect(search.search('ric')[0]?.name).toMatch(/^Rice/);
+    expect(search.search('sinignag')[0]?.key).toBe('fnri:sinigang'); // swapped letters
   });
 
   it('ignores accents in both directions', () => {

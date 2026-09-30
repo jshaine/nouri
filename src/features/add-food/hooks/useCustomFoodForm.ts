@@ -16,14 +16,24 @@ interface Options {
   /** Editing: the food's id and its current values. */
   editing?: { id: string; input: CustomFoodInput };
   onSaved: (food: Food) => void;
+  suggestedName?: string | undefined;
 }
 
 /** Form state for creating or editing a custom food. Input survives failed saves. */
-export function useCustomFoodForm({ repo, editing, onSaved }: Options) {
-  const [value, setValue] = useState<CustomFoodInput>(editing?.input ?? EMPTY_CUSTOM_FOOD);
+export function useCustomFoodForm({ repo, editing, onSaved, suggestedName }: Options) {
+  const [value, setValue] = useState<CustomFoodInput>(
+    () => editing?.input ?? { ...EMPTY_CUSTOM_FOOD, name: suggestedName ?? '' },
+  );
   const [errors, setErrors] = useState<CustomFoodErrors>({});
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string>();
+
+  // A new suggestion fills the name only if it's empty: never overwrite typing.
+  const [seenSuggestion, setSeenSuggestion] = useState(suggestedName);
+  if (suggestedName !== seenSuggestion) {
+    setSeenSuggestion(suggestedName);
+    if (suggestedName && !value.name) setValue({ ...value, name: suggestedName });
+  }
 
   const onChange = <K extends keyof CustomFoodInput>(field: K, next: CustomFoodInput[K]) => {
     setValue((v) => ({ ...v, [field]: next }));
@@ -56,7 +66,5 @@ export function useCustomFoodForm({ repo, editing, onSaved }: Options) {
     }
   };
 
-  const dirty = JSON.stringify(value) !== JSON.stringify(editing?.input ?? EMPTY_CUSTOM_FOOD);
-
-  return { value, errors, saving, saveError, dirty, onChange, onSubmit };
+  return { value, errors, saving, saveError, onChange, onSubmit };
 }

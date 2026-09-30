@@ -6,12 +6,19 @@ import { useCustomFoodForm } from '../hooks/useCustomFoodForm';
 export interface CustomFoodContainerProps {
   repo: Pick<CustomFoodRepository, 'create' | 'update'>;
   editing?: { id: string; input: CustomFoodInput };
+  /** Fills the name if it's still empty (e.g. the text searched for). */
+  suggestedName?: string;
   onSaved: (food: Food) => void;
 }
 
 /** Create or edit a custom food (the Manual tab, and "Edit" on My foods). */
-export function CustomFoodContainer({ repo, editing, onSaved }: CustomFoodContainerProps) {
-  const form = useCustomFoodForm({ repo, editing, onSaved });
+export function CustomFoodContainer({
+  repo,
+  editing,
+  suggestedName,
+  onSaved,
+}: CustomFoodContainerProps) {
+  const form = useCustomFoodForm({ repo, editing, onSaved, suggestedName });
   return (
     <CustomFoodForm
       value={form.value}

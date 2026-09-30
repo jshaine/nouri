@@ -5,7 +5,7 @@ test('sets manual goals and a theme in Settings', async ({ page }) => {
   await page.getByLabel('Daily calories').fill('2000');
   await page.getByLabel('Macro split').selectOption('high-protein');
   await page.getByRole('button', { name: 'Save goals' }).click();
-  await expect(page.getByRole('status')).toContainText('Goals saved');
+  await expect(page.getByRole('status').filter({ hasText: 'Goals saved' })).toBeVisible();
 
   await page.getByRole('radio', { name: 'Dark' }).check();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
