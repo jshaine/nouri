@@ -65,3 +65,24 @@ export function ageOn(birthDate: LocalDate, on: LocalDate): number {
   const hadBirthday = m > bm || (m === bm && d >= bd);
   return y - by - (hadBirthday ? 0 : 1);
 }
+
+/** "Today", "Yesterday", or a short weekday date like "Tue, Sep 29" (with the year if different). */
+export function relativeDayLabel(date: LocalDate, today: LocalDate, locale = 'en-US'): string {
+  const diff = daysBetween(date, today);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Yesterday';
+  const d = startOfLocalDate(date);
+  const sameYear = date.slice(0, 4) === today.slice(0, 4);
+  return d.toLocaleDateString(locale, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    ...(sameYear ? {} : { year: 'numeric' }),
+  });
+}
+
+/** The day to show: a valid past or current day, else today (no future days). */
+export function clampToToday(value: string | null, today: LocalDate): LocalDate {
+  if (!value || !isLocalDate(value) || isAfter(value, today)) return today;
+  return value;
+}

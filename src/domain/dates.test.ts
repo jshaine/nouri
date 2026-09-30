@@ -1,11 +1,13 @@
 import {
   addDays,
   ageOn,
+  clampToToday,
   compareDates,
   daysBetween,
   isAfter,
   isLocalDate,
   parseLocalDate,
+  relativeDayLabel,
   startOfLocalDate,
   toLocalDate,
   weekOf,
@@ -69,5 +71,29 @@ describe('ageOn', () => {
     expect(ageOn(birth, d('2026-09-30'))).toBe(17);
     expect(ageOn(birth, d('2026-10-01'))).toBe(18);
     expect(ageOn(birth, d('2026-11-15'))).toBe(18);
+  });
+});
+
+describe('relativeDayLabel', () => {
+  const today = d('2026-09-30');
+  it('names today and yesterday', () => {
+    expect(relativeDayLabel(today, today)).toBe('Today');
+    expect(relativeDayLabel(d('2026-09-29'), today)).toBe('Yesterday');
+  });
+
+  it('shows a short date otherwise, with the year only when it differs', () => {
+    expect(relativeDayLabel(d('2026-09-22'), today)).toBe('Tue, Sep 22');
+    expect(relativeDayLabel(d('2025-12-31'), today)).toBe('Wed, Dec 31, 2025');
+  });
+});
+
+describe('clampToToday', () => {
+  const today = d('2026-09-30');
+  it('keeps valid past days', () => {
+    expect(clampToToday('2026-09-01', today)).toBe('2026-09-01');
+  });
+
+  it.each([null, '', 'soon', '2026-02-30', '2026-10-01'])('falls back to today for %j', (v) => {
+    expect(clampToToday(v, today)).toBe(today);
   });
 });
