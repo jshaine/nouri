@@ -98,7 +98,13 @@ describe('calculateGoals', () => {
 
   it('does not flag a target just above the floor that rounds down to it', () => {
     // BMR 1462 × 1.2 = 1754.4; − 550 = 1204.4 → 1200, but above the floor.
-    const r = ok({ ...woman, currentKg: 77.3, goalKg: 60, activity: 'sedentary', weeklyGoalKg: -0.5 });
+    const r = ok({
+      ...woman,
+      currentKg: 77.3,
+      goalKg: 60,
+      activity: 'sedentary',
+      weeklyGoalKg: -0.5,
+    });
     expect(r).toMatchObject({ bmr: 1462, floored: false, goal: { kcal: 1200 } });
   });
 
