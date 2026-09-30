@@ -1,6 +1,7 @@
-import { ChartColumn, ClipboardList } from 'lucide-react';
+import { ClipboardList } from 'lucide-react';
 import type { RouteObject } from 'react-router';
 import type { Repositories } from '@/data';
+import { HistoryContainer } from '@/features/history';
 import { OnboardingContainer } from '@/features/onboarding';
 import { ProfileContainer } from '@/features/profile';
 import { SettingsContainer } from '@/features/settings';
@@ -21,14 +22,7 @@ export function appRoutes(repos: Repositories): RouteObject[] {
       ),
       children: [
         { index: true, element: <TodayContainer repos={repos} /> },
-        {
-          path: 'history',
-          element: (
-            <Placeholder title="History" icon={ChartColumn}>
-              Your week at a glance, with daily calories against your goal.
-            </Placeholder>
-          ),
-        },
+        { path: 'history', element: <HistoryContainer repos={repos} /> },
         { path: 'profile', element: <ProfileContainer repos={repos} /> },
         { path: 'settings', element: <SettingsContainer repos={repos} /> },
         { path: '*', element: <NotFound /> },

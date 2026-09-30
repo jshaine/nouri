@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useId } from 'react';
 import type { LocalDate } from '@/domain';
-import { IconButton } from '@/ui';
+import { IconButton } from '../IconButton/IconButton';
 import styles from './DateSwitcher.module.css';
 
 export interface DateSwitcherProps {
@@ -12,6 +12,8 @@ export interface DateSwitcherProps {
   onPrevious: () => void;
   onNext: () => void;
   onPick: (date: LocalDate) => void;
+  previousLabel?: string;
+  nextLabel?: string;
 }
 
 /** Previous / next day, and a native date picker on the label. No future days. */
@@ -22,12 +24,14 @@ export function DateSwitcher({
   onPrevious,
   onNext,
   onPick,
+  previousLabel = 'Previous day',
+  nextLabel = 'Next day',
 }: DateSwitcherProps) {
   const pickerId = useId();
   const isToday = date === today;
   return (
     <div className={styles.switcher}>
-      <IconButton icon={ChevronLeft} label="Previous day" onClick={onPrevious} />
+      <IconButton icon={ChevronLeft} label={previousLabel} onClick={onPrevious} />
       <label className={styles.picker} htmlFor={pickerId}>
         <span className={styles.label}>{label}</span>
         <span className="visually-hidden">, choose a date</span>
@@ -44,7 +48,7 @@ export function DateSwitcher({
       </label>
       <IconButton
         icon={ChevronRight}
-        label="Next day"
+        label={nextLabel}
         onClick={onNext}
         disabled={isToday}
         className={isToday ? styles.hidden : undefined}

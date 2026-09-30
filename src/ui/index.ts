@@ -19,3 +19,4 @@ export {
 } from './SegmentedControl/SegmentedControl';
 export { SelectField, type SelectFieldProps, type SelectOption } from './SelectField/SelectField';
 export { useDocumentTitle, APP_NAME } from './hooks/useDocumentTitle';
+export { DateSwitcher, type DateSwitcherProps } from './DateSwitcher/DateSwitcher';

@@ -80,4 +80,17 @@ describe('exerciseRepository', () => {
     expect(await firstValue(repos.exercise.liveForDate(d))).toBe(0);
     await repos.exercise.set(d, 0); // clearing twice is fine
   });
+
+  it('reads a range of days', async () => {
+    const { repos } = createTestRepositories();
+    await repos.exercise.set(day('2026-09-28'), 200);
+    await repos.exercise.set(day('2026-09-30'), 300);
+    await repos.exercise.set(day('2026-10-01'), 100);
+    expect(
+      await firstValue(repos.exercise.liveForRange(day('2026-09-28'), day('2026-09-30'))),
+    ).toEqual({
+      '2026-09-28': 200,
+      '2026-09-30': 300,
+    });
+  });
 });
