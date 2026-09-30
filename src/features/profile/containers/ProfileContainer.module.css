@@ -21,3 +21,16 @@
   font-stretch: var(--stretch-condensed);
   font-weight: var(--weight-black);
 }
+
+.prompt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: var(--label-border) solid var(--color-ink);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+}
