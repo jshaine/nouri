@@ -41,7 +41,7 @@
 .text {
   display: grid;
   place-items: center;
-  min-height: calc(var(--tap-min) - 6px);
+  min-height: var(--tap-min);
   padding: 0 var(--space-2);
   border-radius: var(--radius-sm);
   color: var(--color-ink-muted);

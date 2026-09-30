@@ -13,7 +13,12 @@ export interface AppProps {
 
 export function App({ repos }: AppProps) {
   useThemeSync(repos.settings);
-  const [router] = useState(() => createBrowserRouter(appRoutes(repos)));
+  const [router] = useState(() =>
+    createBrowserRouter(appRoutes(repos), {
+      // Matches Vite's base, so the app also works from a subpath like /nouri/.
+      basename: import.meta.env.BASE_URL,
+    }),
+  );
 
   if (UiGallery && window.location.hash === '#gallery') {
     return (

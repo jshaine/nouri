@@ -9,7 +9,11 @@ const BACKGROUND_COLOR = '#f5f0e6';
 /** foods.json is precached, so allow it past Workbox's 2 MiB default. */
 const MAX_PRECACHE_BYTES = 6 * 1024 * 1024;
 
+/** Serve from a subpath (e.g. GitHub Pages "/nouri/") with BASE_PATH; defaults to "/". */
+const BASE = process.env.BASE_PATH ?? '/';
+
 export default defineConfig({
+  base: BASE,
   plugins: [
     react(),
     VitePWA({
@@ -21,8 +25,8 @@ export default defineConfig({
         short_name: 'Nouri',
         description: 'Offline macro tracker. Your data stays on your device.',
         lang: 'en',
-        start_url: '/',
-        scope: '/',
+        start_url: BASE,
+        scope: BASE,
         display: 'standalone',
         orientation: 'portrait',
         theme_color: THEME_COLOR,
@@ -46,7 +50,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,json}'],
-        navigateFallback: 'index.html',
+        navigateFallback: `${BASE}index.html`,
         maximumFileSizeToCacheInBytes: MAX_PRECACHE_BYTES,
         cleanupOutdatedCaches: true,
       },

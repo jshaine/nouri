@@ -61,15 +61,28 @@ IndexedDB on the device, and the food database ships as `public/foods.json`.
   (Features can't import `app`, and `data` has no React, so there is no shared
   context layer; explicit props also make container tests use real
   repositories on fake-indexeddb.)
-- Features so far: `today` (Daily Facts label, meals, date switcher, edit,
-  delete + undo), `add-food` (Add sheet, custom food form), `food-detail`
-  (portion, quantity, meal, Add to log), `goals` (manual goal editor) and
+- Features: `onboarding` (first-run goal suggestion), `today` (Daily Facts
+  label, meals, date switcher, edit, delete + undo, backup reminder),
+  `add-food` (Add sheet, custom food form), `food-detail` (portion, quantity,
+  meal, Add to log), `goals` (goal editor), `weight`, `profile`, `history`
+  (weekly chart and averages), `backup` (export, check, merge or replace) and
   `settings`.
 - When a presentational list needs per-row behavior (e.g. long-press), the
   component takes a render prop and a small container supplies the row, so
   components never import hooks or containers.
 - Controls bound to live settings keep the tapped value locally until the
   saved value arrives, so they never flicker back.
+
+## PWA and deployment
+
+- `src/app/pwa/` registers the service worker (vite-plugin-pwa, precaching the
+  app shell and food files). A waiting update is offered through
+  `updateStore` and the `UpdatePrompt` banner; it never reloads on its own.
+- `BASE_PATH` (default `/`) sets Vite's `base`, the router `basename`, the
+  manifest scope and the navigation fallback, for hosting under a subpath.
+  See [DEPLOY.md](DEPLOY.md).
+- `e2e/a11y.spec.ts` checks every screen, light and dark, for 44 px tap
+  targets, accessible names and horizontal overflow.
 
 ## Design system
 
