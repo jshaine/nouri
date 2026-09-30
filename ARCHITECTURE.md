@@ -42,6 +42,18 @@ IndexedDB on the device, and the food database ships as `public/foods.json`.
 - Tests use `createTestRepositories()` from `src/data/testing.ts`: a fresh
   fake-indexeddb database with a controllable clock and sequential ids.
 
+## Food database
+
+- `scripts/build-foods.ts` (build time, Node) turns the USDA CSVs into
+  `public/foods.json` (committed, public domain) and, if you have FNRI data
+  with permission, `public/foods-fnri.json` (gitignored, copyrighted). The
+  format and its validating decoder are in `src/domain/foodPack.ts`.
+- At runtime `openFoodDatabase()` (`src/data/foods/`) starts a Web Worker that
+  fetches both files (served offline by the service worker), decodes them and
+  builds the MiniSearch index (`src/domain/search.ts`), so the main thread never
+  stalls. If workers are unavailable it indexes in-process. Search round trips
+  take a few milliseconds.
+
 ## Features and wiring
 
 - `src/main.tsx` opens the repositories once and passes them to `App`, and

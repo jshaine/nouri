@@ -4,10 +4,11 @@
  * "Main food, detail, detail"). Curated by hand; add rules as needed.
  */
 export const TAGALOG_ALIASES: readonly (readonly [RegExp, readonly string[]])[] = [
-  [/^Rice, white, .*cooked/i, ['kanin', 'sinaing']],
-  [/^Rice, brown, .*cooked/i, ['kanin', 'brown rice']],
-  [/^Rice, white, .*raw/i, ['bigas']],
-  [/^Rice, glutinous/i, ['malagkit']],
+  // \bcooked\b so "uncooked" doesn't match; glutinous rice is malagkit, not kanin.
+  [/^Rice, white, (?!.*glutinous).*\bcooked\b/i, ['kanin', 'sinaing']],
+  [/^Rice, brown, .*\bcooked\b/i, ['kanin', 'brown rice']],
+  [/^Rice, white, (?!.*glutinous).*\b(raw|uncooked)\b/i, ['bigas']],
+  [/^Rice, (white, )?glutinous/i, ['malagkit']],
   [/^Egg, whole/i, ['itlog']],
   [/^Egg, duck/i, ['itlog ng pato', 'balut']],
   [/^Chicken/i, ['manok']],
