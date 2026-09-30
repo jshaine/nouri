@@ -28,7 +28,7 @@ test('logs a custom food and changes the date', async ({ page }) => {
   await expect(detail.getByRole('region', { name: 'This amount' })).toContainText('290 kcal');
   await detail.getByRole('button', { name: 'Add to log' }).click();
 
-  await expect(page.getByRole('status')).toContainText('Added to Lunch');
+  await expect(page.getByRole('status').filter({ hasText: 'Added to Lunch' })).toBeVisible();
   const label = page.getByRole('region', { name: 'Daily Facts' });
   await expect(label).toContainText('290');
   await expect(page.getByRole('region', { name: 'Lunch' })).toContainText('Chicken adobo');
