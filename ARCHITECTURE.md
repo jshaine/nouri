@@ -31,7 +31,9 @@ IndexedDB on the device, and the food database ships as `public/foods.json`.
 
 Visual rules and tokens are documented in [DESIGN.md](DESIGN.md). Tokens live in
 `src/ui/tokens/` (CSS custom properties plus contrast tests); the theme
-override is applied by `src/app/theme`.
+override is applied by `src/app/theme`. Shared components are exported from
+`src/ui/index.ts`; run `npm run dev` and open `/#gallery` to see them all
+(dev-only, not in production builds).
 
 ## Conventions
 
