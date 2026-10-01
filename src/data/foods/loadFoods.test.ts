@@ -16,24 +16,42 @@ const fnriPack: FoodPack = {
   fnri: [['sinigang', 'Sinigang', 60, 5, 3, 3, null, [], []]],
 };
 
+const phPack: FoodPack = {
+  v: 1,
+  generatedAt: 'x',
+  sources: { off: 'Open Food Facts' },
+  usda: [],
+  fnri: [],
+  off: [
+    ['4800', 'Gardenia Classic White Bread', 273, 8.9, 55.4, 1.8, null, [['2 slices', 56]], []],
+  ],
+};
+
 const ok = (body: unknown) =>
   Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(body) });
 const status = (code: number) =>
   Promise.resolve({ ok: false, status: code, json: () => Promise.reject(new Error('no body')) });
 
 describe('loadBundledFoods', () => {
-  it('loads USDA and FNRI, FNRI first, with both credits', async () => {
-    const fetchFn = vi.fn((url: string) =>
-      url.endsWith('foods.json') ? ok(usdaPack) : ok(fnriPack),
-    );
+  it('loads every pack, Philippine ones before USDA, with each credit', async () => {
+    const packs: Record<string, FoodPack> = {
+      '/nouri/foods.json': usdaPack,
+      '/nouri/foods-fnri.json': fnriPack,
+      '/nouri/foods-ph.json': phPack,
+    };
+    const fetchFn = vi.fn((url: string) => (packs[url] ? ok(packs[url]) : status(404)));
     const { foods, sources } = await loadBundledFoods(fetchFn, '/nouri/');
-    expect(fetchFn).toHaveBeenCalledWith('/nouri/foods.json');
-    expect(fetchFn).toHaveBeenCalledWith('/nouri/foods-fnri.json');
-    expect(foods.map((f) => f.key)).toEqual(['fnri:sinigang', 'usda:1']);
-    expect(sources).toEqual({ usda: 'USDA FoodData Central', fnri: 'FNRI PhilFCT' });
+    expect(fetchFn).toHaveBeenCalledTimes(3);
+    expect(foods.map((f) => f.key)).toEqual(['fnri:sinigang', 'off:4800', 'usda:1']);
+    expect(foods[1]?.portions).toEqual([{ label: '2 slices', grams: 56 }]);
+    expect(sources).toEqual({
+      usda: 'USDA FoodData Central',
+      fnri: 'FNRI PhilFCT',
+      off: 'Open Food Facts',
+    });
   });
 
-  it('works without the FNRI file (404, network error, or an HTML fallback page)', async () => {
+  it('works without the optional files (404, network error, or an HTML fallback page)', async () => {
     for (const fnri of [
       status(404),
       Promise.reject(new Error('offline')),

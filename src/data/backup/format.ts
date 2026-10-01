@@ -56,7 +56,7 @@ const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !
 const str = (v: unknown) => typeof v === 'string' && v.length > 0;
 const num = (v: unknown) => typeof v === 'number' && Number.isFinite(v);
 const nonNeg = (v: unknown) => num(v) && (v as number) >= 0;
-const key = (v: unknown) => typeof v === 'string' && /^(usda|fnri|custom):.+/.test(v);
+const key = (v: unknown) => typeof v === 'string' && /^(usda|fnri|off|custom):.+/.test(v);
 const portions = (v: unknown) =>
   Array.isArray(v) &&
   v.every((p) => isObj(p) && str(p.label) && (nonNeg(p.grams) || nonNeg(p.servings)));

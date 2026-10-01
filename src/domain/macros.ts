@@ -16,17 +16,19 @@ export const MACRO_NAME: Readonly<Record<Macro, string>> = {
 };
 
 /** Where a food's numbers come from. Shown as a badge wherever a food appears. */
-export const FOOD_SOURCES = ['usda', 'fnri', 'custom'] as const;
+export const FOOD_SOURCES = ['usda', 'fnri', 'off', 'custom'] as const;
 export type FoodSource = (typeof FOOD_SOURCES)[number];
 
 export const FOOD_SOURCE_LABEL: Readonly<Record<FoodSource, string>> = {
   usda: 'USDA',
   fnri: 'FNRI',
+  off: 'Label',
   custom: 'Custom',
 };
 
 export const FOOD_SOURCE_DESCRIPTION: Readonly<Record<FoodSource, string>> = {
   usda: 'USDA FoodData Central',
   fnri: 'FNRI Philippine Food Composition Tables',
+  off: 'Open Food Facts: from the package label, entered by the community',
   custom: 'Your own entry',
 };

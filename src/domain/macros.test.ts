@@ -8,6 +8,11 @@ describe('macro constants', () => {
   });
 
   it('labels every food source', () => {
-    expect(FOOD_SOURCES.map((s) => FOOD_SOURCE_LABEL[s])).toEqual(['USDA', 'FNRI', 'Custom']);
+    expect(FOOD_SOURCES.map((s) => FOOD_SOURCE_LABEL[s])).toEqual([
+      'USDA',
+      'FNRI',
+      'Label',
+      'Custom',
+    ]);
   });
 });

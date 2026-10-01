@@ -31,6 +31,9 @@ export interface FoodDetailContainerProps {
 const EMPTY: readonly Portion[] = [];
 
 export function basisNote(food: Food): string {
+  // Label foods are typed in by volunteers: worth a glance at the pack.
+  if (food.source === 'off')
+    return 'Per 100 g, from the package label. Check it against your pack.';
   if (food.basis.kind === '100g') return 'Nutrition per 100 g';
   return food.basis.servingGrams === undefined
     ? 'Nutrition per serving'

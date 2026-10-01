@@ -9,7 +9,11 @@ export function useFoodSources(foods: Pick<FoodDatabase, 'ready'>): string[] | u
     foods.ready().then(
       (info) => {
         if (active)
-          setSources([info.sources.usda, info.sources.fnri].filter((s): s is string => Boolean(s)));
+          setSources(
+            [info.sources.usda, info.sources.fnri, info.sources.off].filter((s): s is string =>
+              Boolean(s),
+            ),
+          );
       },
       () => {
         if (active) setSources([]);
