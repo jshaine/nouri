@@ -55,8 +55,9 @@ links to work on a first visit too.
 
 ## Food data and FNRI
 
-`public/foods.json` (USDA FoodData Central, public domain) is committed and
-always deployed.
+`public/foods.json` (USDA FoodData Central, public domain) and
+`public/foods-ph.json` (Philippine products from Open Food Facts, ODbL) are
+committed and always deployed. Settings → About credits both.
 
 `public/foods-fnri.json` (Philippine Food Composition Tables) is gitignored,
 because the data is copyrighted. A host that builds from the repository will
