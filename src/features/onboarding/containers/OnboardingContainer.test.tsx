@@ -22,55 +22,111 @@ function setup() {
   return { repos, router };
 }
 
-async function fill(label: string, value: string) {
-  const input = screen.getByLabelText(label);
-  await userEvent.clear(input);
-  await userEvent.type(input, value);
-  await userEvent.tab();
+const next = (name = 'Next') => userEvent.click(screen.getByRole('button', { name }));
+
+/** Welcome → About you (female, 1996-05-01, 160 cm, 65 kg) → Lightly active → goal step. */
+async function throughActivity() {
+  await userEvent.click(await screen.findByRole('button', { name: 'Get started' }));
+  expect(await screen.findByRole('heading', { name: 'About you' })).toBeInTheDocument();
+  expect(screen.getByText('Step 2 of 5')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('radio', { name: 'Female' }));
+  fireEvent.change(screen.getByLabelText('Birth date'), { target: { value: '1996-05-01' } });
+  await userEvent.type(screen.getByLabelText('Height'), '160');
+  await userEvent.type(screen.getByLabelText('Current weight'), '65');
+  await next();
+  expect(await screen.findByRole('heading', { name: 'How active are you?' })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('radio', { name: /Lightly active/ }));
+  await next();
+  expect(await screen.findByRole('heading', { name: 'Your goal' })).toBeInTheDocument();
 }
 
 describe('OnboardingContainer', () => {
-  it('walks through units, details and suggested goals, then finishes on Today', async () => {
+  it('asks about you, activity and goal, then shows the plan and starts on Today', async () => {
     const { repos, router } = setup();
-    expect(await screen.findByRole('heading', { name: 'Welcome to Nouri' })).toBeInTheDocument();
-    expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+    await throughActivity();
+    expect(screen.getByText('You weigh 65 kg now.')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('radio', { name: /Lose weight/ }));
+    expect(screen.getByRole('radio', { name: /Lose 0.5 kg per week/ })).toBeChecked();
+    await userEvent.type(screen.getByLabelText('Goal weight'), '58');
+    await next('See my plan');
 
-    expect(await screen.findByRole('heading', { name: 'About you' })).toBeInTheDocument();
-    await userEvent.type(screen.getByLabelText('Current weight'), '65');
-    await userEvent.click(screen.getByRole('radio', { name: 'Female' }));
-    fireEvent.change(screen.getByLabelText('Birth date'), { target: { value: '1996-05-01' } });
-    fireEvent.blur(screen.getByLabelText('Birth date'));
-    await fill('Height', '160');
-    await fill('Goal weight', '58');
-    await userEvent.click(screen.getByRole('radio', { name: /Lightly active/ }));
-    await waitFor(async () => {
-      expect((await repos.profile.get()).goalWeightKg).toBe(58);
+    expect(await screen.findByRole('heading', { name: 'Your plan' })).toBeInTheDocument();
+    expect(screen.getByText('Daily goal')).toBeInTheDocument();
+    // The plan's own button is the only way forward (no empty Next).
+    expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button').every((b) => b.textContent.trim() !== '')).toBe(true);
+    expect(await repos.profile.get()).toMatchObject({
+      sex: 'female',
+      birthDate: '1996-05-01',
+      heightCm: 160,
+      activity: 'light',
+      goalWeightKg: 58,
+      weeklyGoalKg: -0.5,
     });
-    // The weight isn't saved until Next, so only "maintain" is offered here.
-    await userEvent.selectOptions(screen.getByLabelText('Weekly goal'), 'Maintain my weight');
-    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
-
-    expect(await screen.findByRole('heading', { name: 'Suggested goals' })).toBeInTheDocument();
     expect((await firstValue(repos.weights.live()))[0]).toMatchObject({ date: TODAY, kg: 65 });
-    expect(await screen.findByText('Daily goal')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Use these goals' }));
-    await screen.findByText(/Goals updated/);
-    expect(goalForDate(await repos.goals.all(), TODAY)?.kcal).toBe(1840); // 1841 → maintain, rounded
-    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
-
-    expect(await screen.findByRole('heading', { name: 'You’re set' })).toBeInTheDocument();
-    expect(screen.getByText(/Your goals are ready/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Start logging' }));
+    await next('Use this plan and start');
     await waitFor(() => {
       expect(router.state.location.pathname).toBe('/');
     });
+    expect(goalForDate(await repos.goals.all(), TODAY)?.kcal).toBe(1290); // 1841 − 550
     expect((await repos.settings.get()).onboardingDone).toBe(true);
+  });
+
+  it('maintains at the current weight without asking for a goal weight', async () => {
+    const { repos } = setup();
+    await throughActivity();
+    await userEvent.click(screen.getByRole('radio', { name: /Maintain my weight/ }));
+    expect(screen.queryByLabelText('Goal weight')).not.toBeInTheDocument();
+    await next('See my plan');
+    await screen.findByRole('heading', { name: 'Your plan' });
+    expect(await repos.profile.get()).toMatchObject({ goalWeightKg: 65, weeklyGoalKg: 0 });
+    await next('Use this plan and start');
+    await waitFor(async () => {
+      expect(goalForDate(await repos.goals.all(), TODAY)?.kcal).toBe(1840);
+    });
+  });
+
+  it('explains what is missing or doesn’t fit, and stays on the step', async () => {
+    setup();
+    await userEvent.click(await screen.findByRole('button', { name: 'Get started' }));
+    await next();
+    expect(screen.getByRole('group', { name: /Sex/ })).toHaveAccessibleDescription(/Choose/);
+    expect(screen.getByLabelText('Birth date')).toHaveAccessibleDescription(/Pick your birth date/);
+    expect(screen.getByLabelText('Current weight')).toHaveAccessibleDescription(/Enter a weight/);
+    expect(screen.getByRole('heading', { name: 'About you' })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Back' }));
+    await throughActivity();
+    await next('See my plan');
+    expect(
+      screen.getByRole('group', { name: 'What would you like to do?' }),
+    ).toHaveAccessibleDescription('Choose what you’d like to do.');
+    await userEvent.click(screen.getByRole('radio', { name: /Lose weight/ }));
+    await userEvent.type(screen.getByLabelText('Goal weight'), '70');
+    await next('See my plan');
+    expect(screen.getByLabelText('Goal weight')).toHaveAccessibleDescription(
+      'To lose weight, enter less than 65 kg.',
+    );
+    await userEvent.clear(screen.getByLabelText('Goal weight'));
+    await userEvent.type(screen.getByLabelText('Goal weight'), '45');
+    await next('See my plan');
+    expect(screen.getByLabelText('Goal weight')).toHaveAccessibleDescription(/BMI of 18.5/);
+  });
+
+  it('offers paces toward the goal, slowest first', async () => {
+    setup();
+    await throughActivity();
+    await userEvent.click(screen.getByRole('radio', { name: /Gain weight/ }));
+    const paces = screen.getByRole('group', { name: 'How fast?' });
+    expect(Array.from(paces.querySelectorAll('b'), (b) => b.textContent)).toEqual([
+      'Gain 0.25 kg per week',
+      'Gain 0.5 kg per week',
+    ]);
   });
 
   it('can be skipped from any step, going to Settings to set goals', async () => {
     const { repos, router } = setup();
-    await userEvent.click(await screen.findByRole('button', { name: 'Next' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Get started' }));
     await userEvent.click(
       await screen.findByRole('button', { name: 'Skip, I’ll set goals myself' }),
     );
@@ -78,17 +134,6 @@ describe('OnboardingContainer', () => {
       expect(router.state.location.pathname).toBe('/settings');
     });
     expect((await repos.settings.get()).onboardingDone).toBe(true);
-  });
-
-  it('explains an invalid current weight and stays on the step', async () => {
-    setup();
-    await userEvent.click(await screen.findByRole('button', { name: 'Next' }));
-    await userEvent.type(await screen.findByLabelText('Current weight'), '5');
-    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
-    expect(screen.getByLabelText('Current weight')).toHaveAccessibleDescription(
-      /Enter a weight in kg/,
-    );
-    expect(screen.getByRole('heading', { name: 'About you' })).toBeInTheDocument();
   });
 
   it('switches units on the first step', async () => {

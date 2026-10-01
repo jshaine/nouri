@@ -6,17 +6,19 @@ import type {
   SettingsRepository,
   WeightRepository,
 } from '@/data';
-import { goalForDate, latestWeight, toLocalDate } from '@/domain';
+import { latestWeight, toLocalDate } from '@/domain';
 import { SuggestionContainer } from '@/features/goals';
 import { SegmentedControl, useDocumentTitle, useLive } from '@/ui';
 import { OnboardingStep } from '../components/OnboardingStep';
 import { AboutYouStep } from './AboutYouStep';
+import { ActivityStep } from './ActivityStep';
+import { GoalStep } from './GoalStep';
 
 const UNIT_OPTIONS = [
   { value: 'metric', label: 'kg, cm' },
   { value: 'imperial', label: 'lb, ft/in' },
 ] as const;
-const TOTAL = 4;
+const STEPS = ['welcome', 'about', 'activity', 'goal', 'plan'] as const;
 
 export interface OnboardingContainerProps {
   repos: {
@@ -28,15 +30,14 @@ export interface OnboardingContainerProps {
   now?: () => Date;
 }
 
-/** First launch: units → about you → suggested goals → done (skippable). */
+/** First launch: units → about you → activity → goal → your plan (skippable). */
 export function OnboardingContainer({ repos, now = () => new Date() }: OnboardingContainerProps) {
   useDocumentTitle('Welcome');
   const navigate = useNavigate();
   const today = toLocalDate(now());
-  const [step, setStep] = useState(1);
+  const [index, setIndex] = useState(0);
   const profile = useLive(() => repos.profile.live(), [repos.profile]);
   const weights = useLive(() => repos.weights.live(), [repos.weights]);
-  const goals = useLive(() => repos.goals.live(), [repos.goals]);
   const p = profile.value;
   if (!p || !weights.value) return null;
   const currentKg = latestWeight(weights.value)?.kg;
@@ -45,88 +46,68 @@ export function OnboardingContainer({ repos, now = () => new Date() }: Onboardin
     await repos.settings.set('onboardingDone', true);
     void navigate(to, { replace: true });
   };
-  const skip = () => {
-    void finish('/settings');
+  const nav = {
+    step: index + 1,
+    total: STEPS.length,
+    onBack: () => {
+      setIndex(index - 1);
+    },
+    onNext: () => {
+      setIndex(index + 1);
+    },
+    onSkip: () => {
+      void finish('/settings');
+    },
   };
+  const step = STEPS[index];
 
-  if (step === 1) {
+  if (step === 'about') {
+    return <AboutYouStep {...nav} profile={p} currentKg={currentKg} today={today} repos={repos} />;
+  }
+  if (step === 'activity') return <ActivityStep {...nav} profile={p} repo={repos.profile} />;
+  if (step === 'goal') {
+    // About you saves a weight before moving on; wait for it to arrive.
+    if (currentKg === undefined) return null;
+    return <GoalStep {...nav} profile={p} currentKg={currentKg} repo={repos.profile} />;
+  }
+  if (step === 'plan') {
     return (
       <OnboardingStep
-        step={1}
-        total={TOTAL}
-        title="Welcome to Nouri"
-        nextLabel="Next"
-        onNext={() => {
-          setStep(2);
-        }}
-        onSkip={skip}
-        intro="A food log that stays on this phone: no account, no ads, works offline. A few details give you suggested goals."
+        {...nav}
+        onNext={undefined}
+        title="Your plan"
+        intro="Suggested from your details. You can change it anytime in Settings."
       >
-        <SegmentedControl
-          label="Units"
-          options={UNIT_OPTIONS}
-          value={p.units}
-          onChange={(units) => {
-            void repos.profile.update({ units });
+        <SuggestionContainer
+          profile={p}
+          currentKg={currentKg}
+          repo={repos.goals}
+          today={today}
+          applyLabel="Use this plan and start"
+          alwaysApply
+          onApplied={() => {
+            void finish('/');
           }}
         />
       </OnboardingStep>
     );
   }
-  if (step === 2) {
-    return (
-      <AboutYouStep
-        profile={p}
-        currentKg={currentKg}
-        today={today}
-        repos={repos}
-        onBack={() => {
-          setStep(1);
-        }}
-        onNext={() => {
-          setStep(3);
-        }}
-        onSkip={skip}
-      />
-    );
-  }
-  if (step === 3) {
-    return (
-      <OnboardingStep
-        step={3}
-        total={TOTAL}
-        title="Suggested goals"
-        nextLabel="Next"
-        onNext={() => {
-          setStep(4);
-        }}
-        onBack={() => {
-          setStep(2);
-        }}
-        onSkip={skip}
-      >
-        <SuggestionContainer profile={p} currentKg={currentKg} repo={repos.goals} today={today} />
-      </OnboardingStep>
-    );
-  }
-  const hasGoal = goals.value ? goalForDate(goals.value, today) !== undefined : false;
   return (
     <OnboardingStep
-      step={4}
-      total={TOTAL}
-      title="You’re set"
-      nextLabel="Start logging"
-      onBack={() => {
-        setStep(3);
-      }}
-      onNext={() => {
-        void finish('/');
-      }}
-      intro={
-        hasGoal
-          ? 'Your goals are ready. Tap Add food on Today to log your first meal.'
-          : 'You can set goals anytime in Settings. Tap Add food on Today to log your first meal.'
-      }
-    />
+      {...nav}
+      onBack={undefined}
+      title="Welcome to Nouri"
+      intro="A food log that stays on this phone: no account, no ads, works offline. Answer a few questions and we’ll suggest your daily calories, protein, carbs and fat."
+      nextLabel="Get started"
+    >
+      <SegmentedControl
+        label="Units"
+        options={UNIT_OPTIONS}
+        value={p.units}
+        onChange={(units) => {
+          void repos.profile.update({ units });
+        }}
+      />
+    </OnboardingStep>
   );
 }

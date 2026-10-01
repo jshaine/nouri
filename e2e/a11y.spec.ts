@@ -43,15 +43,12 @@ async function audit(page: Page) {
   });
 }
 
-test.beforeEach(async ({ page }) => {
-  await skipOnboarding(page);
-});
-
 for (const scheme of ['light', 'dark'] as const) {
   test(`every screen passes the tap-target, name and overflow checks (${scheme})`, async ({
     page,
   }) => {
     await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
+    await skipOnboarding(page);
     for (const path of ['/', '/history', '/profile', '/settings']) {
       await page.goto(path);
       await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
@@ -65,3 +62,29 @@ for (const scheme of ['light', 'dark'] as const) {
     expect(await audit(page), 'add food sheet').toEqual([]);
   });
 }
+
+test('every onboarding step passes the same checks', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/welcome');
+  const check = async (heading: string) => {
+    await expect(page.getByRole('heading', { name: heading })).toBeVisible();
+    expect(await audit(page), heading).toEqual([]);
+  };
+  await check('Welcome to Nouri');
+  await page.getByRole('button', { name: 'Get started' }).click();
+  await page.getByRole('button', { name: 'Next' }).click(); // shows every error
+  await check('About you');
+  await page.getByRole('radio', { name: 'Female' }).check();
+  await page.getByLabel('Birth date').fill('1996-05-01');
+  await page.getByLabel('Height').fill('160');
+  await page.getByLabel('Current weight').fill('65');
+  await page.getByRole('button', { name: 'Next' }).click();
+  await check('How active are you?');
+  await page.locator('label', { hasText: 'Lightly active' }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.locator('label', { hasText: 'Lose weight' }).click();
+  await check('Your goal');
+  await page.getByLabel('Goal weight').fill('58');
+  await page.getByRole('button', { name: 'See my plan' }).click();
+  await check('Your plan');
+});
