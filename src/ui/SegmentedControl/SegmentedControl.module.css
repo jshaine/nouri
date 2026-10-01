@@ -61,3 +61,8 @@
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}

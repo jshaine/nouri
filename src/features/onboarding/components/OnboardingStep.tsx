@@ -2,14 +2,18 @@ import { useId, type ReactNode } from 'react';
 import { Button } from '@/ui';
 import styles from './Onboarding.module.css';
 
-export interface OnboardingStepProps {
+export interface StepPosition {
   step: number;
   total: number;
+}
+
+export interface OnboardingStepProps extends StepPosition {
   title: string;
   intro?: string;
   children?: ReactNode;
-  nextLabel: string;
-  onNext: () => void;
+  /** The primary button; a step may leave it out when its content has its own. */
+  nextLabel?: string | undefined;
+  onNext?: (() => void) | undefined;
   onBack?: (() => void) | undefined;
   /** "Skip, I'll set goals myself" — on every step but the last. */
   onSkip?: (() => void) | undefined;
@@ -44,9 +48,11 @@ export function OnboardingStep({
             Back
           </Button>
         )}
-        <Button variant="primary" onClick={onNext}>
-          {nextLabel}
-        </Button>
+        {onNext && (
+          <Button variant="primary" onClick={onNext}>
+            {nextLabel}
+          </Button>
+        )}
       </div>
       {onSkip && (
         <Button variant="ghost" block onClick={onSkip}>

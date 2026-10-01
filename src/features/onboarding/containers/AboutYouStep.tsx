@@ -1,11 +1,42 @@
 import { useState } from 'react';
 import type { ProfileRepository, WeightRepository } from '@/data';
-import { parseBodyWeight, type LocalDate, type Profile } from '@/domain';
-import { ProfileDetailsContainer } from '@/features/profile';
-import { NumberField } from '@/ui';
-import { OnboardingStep } from '../components/OnboardingStep';
+import {
+  cmToFeetInches,
+  kgToLb,
+  parseBirthDate,
+  parseBodyWeight,
+  parseHeight,
+  type LocalDate,
+  type Profile,
+  type Sex,
+} from '@/domain';
+import { HeightField } from '@/features/profile';
+import { NumberField, SegmentedControl, TextField } from '@/ui';
+import { OnboardingStep, type StepPosition } from '../components/OnboardingStep';
 
-interface AboutYouStepProps {
+const SEX_OPTIONS = [
+  { value: 'female', label: 'Female' },
+  { value: 'male', label: 'Male' },
+] as const;
+
+type Field = 'sex' | 'birthDate' | 'height' | 'weight';
+const oneDecimal = (n: number) => String(Math.round(n * 10) / 10);
+
+function draftsFrom(p: Profile, currentKg: number | undefined) {
+  const ftIn = p.heightCm === undefined ? undefined : cmToFeetInches(p.heightCm);
+  return {
+    birthDate: p.birthDate ?? '',
+    cm: p.heightCm === undefined ? '' : oneDecimal(p.heightCm),
+    ft: ftIn ? String(ftIn.feet) : '',
+    in: ftIn ? String(ftIn.inches) : '',
+    weight:
+      currentKg === undefined
+        ? ''
+        : oneDecimal(p.units === 'metric' ? currentKg : kgToLb(currentKg)),
+  };
+}
+
+interface AboutYouStepProps extends StepPosition {
   profile: Profile;
   currentKg: number | undefined;
   today: LocalDate;
@@ -15,65 +46,75 @@ interface AboutYouStepProps {
   onSkip: () => void;
 }
 
-/** Step 2: the calculator's details, plus a current weight that becomes the first weigh-in. */
-export function AboutYouStep({
-  profile,
-  currentKg,
-  today,
-  repos,
-  onBack,
-  onNext,
-  onSkip,
-}: AboutYouStepProps) {
-  const [weight, setWeight] = useState('');
-  const [error, setError] = useState<string>();
+/** Sex, birth date, height and current weight: what the calorie formula needs about you. */
+export function AboutYouStep({ profile, currentKg, today, repos, ...nav }: AboutYouStepProps) {
+  const [sex, setSex] = useState<Sex | undefined>(profile.sex);
+  const [drafts, setDrafts] = useState(() => draftsFrom(profile, currentKg));
+  const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
+  const edit = (field: keyof typeof drafts, value: string) => {
+    setDrafts((d) => ({ ...d, [field]: value }));
+    const key: Field = field === 'cm' || field === 'ft' || field === 'in' ? 'height' : field;
+    setErrors((e) => ({ ...e, [key]: undefined }));
+  };
 
   const next = async () => {
-    if (weight.trim()) {
-      const r = parseBodyWeight(profile.units, weight);
-      if (!r.ok) {
-        setError(r.error);
-        return;
-      }
-      await repos.weights.set(today, r.value);
-    }
-    onNext();
+    const birth = parseBirthDate(drafts.birthDate, today);
+    const height = parseHeight(profile.units, drafts);
+    const weight = parseBodyWeight(profile.units, drafts.weight);
+    const found: Partial<Record<Field, string>> = {
+      sex: sex ? undefined : 'Choose the one the formula should use.',
+      birthDate: birth.ok ? undefined : birth.error,
+      height: height.ok ? undefined : height.error,
+      weight: weight.ok ? undefined : weight.error,
+    };
+    setErrors(found);
+    if (!sex || !birth.ok || !height.ok || !weight.ok) return;
+    await repos.profile.update({ sex, birthDate: birth.value, heightCm: height.value });
+    await repos.weights.set(today, weight.value);
+    nav.onNext();
   };
 
   return (
     <OnboardingStep
-      step={2}
-      total={4}
+      {...nav}
       title="About you"
       intro="Used only to estimate your needs. You can change these anytime in Profile."
       nextLabel="Next"
-      onBack={onBack}
       onNext={() => {
         void next();
       }}
-      onSkip={onSkip}
     >
+      <SegmentedControl
+        label="Sex (for the calorie formula)"
+        options={SEX_OPTIONS}
+        value={sex}
+        error={errors.sex}
+        onChange={(v) => {
+          setSex(v);
+          setErrors((e) => ({ ...e, sex: undefined }));
+        }}
+      />
+      <TextField
+        label="Birth date"
+        type="date"
+        max={today}
+        hint="For your age."
+        value={drafts.birthDate}
+        error={errors.birthDate}
+        onChange={(v) => {
+          edit('birthDate', v);
+        }}
+      />
+      <HeightField units={profile.units} drafts={drafts} error={errors.height} onEdit={edit} />
       <NumberField
         label="Current weight"
         unit={profile.units === 'metric' ? 'kg' : 'lb'}
-        value={weight}
-        error={error}
-        hint={
-          currentKg === undefined
-            ? 'This becomes your first weigh-in.'
-            : 'Leave empty to keep your last weigh-in.'
-        }
+        hint="This becomes your first weigh-in."
+        value={drafts.weight}
+        error={errors.weight}
         onChange={(v) => {
-          setWeight(v);
-          setError(undefined);
+          edit('weight', v);
         }}
-      />
-      <ProfileDetailsContainer
-        key={profile.units}
-        profile={profile}
-        repo={repos.profile}
-        currentKg={currentKg}
-        today={today}
       />
     </OnboardingStep>
   );

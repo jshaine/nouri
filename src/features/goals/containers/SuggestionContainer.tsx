@@ -9,6 +9,10 @@ export interface SuggestionContainerProps {
   currentKg: number | undefined;
   repo: Pick<GoalRepository, 'live' | 'setFrom'>;
   today: LocalDate;
+  applyLabel?: string;
+  alwaysApply?: boolean;
+  /** Called after the suggestion is saved as the goal. */
+  onApplied?: () => void;
 }
 
 export function SuggestionContainer({ repo, ...rest }: SuggestionContainerProps) {
@@ -23,6 +27,9 @@ function Suggestion({
   goals,
   repo,
   today,
+  applyLabel,
+  alwaysApply = false,
+  onApplied,
 }: Omit<SuggestionContainerProps, 'repo'> & {
   goals: Parameters<typeof useSuggestion>[2];
   repo: Pick<GoalRepository, 'setFrom'>;
@@ -35,8 +42,12 @@ function Suggestion({
       onPreset={s.onPreset}
       applying={s.applying}
       message={s.message}
+      {...(applyLabel ? { applyLabel } : {})}
+      alwaysApply={alwaysApply}
       onApply={() => {
-        void s.onApply();
+        void s.onApply().then((saved) => {
+          if (saved) onApplied?.();
+        });
       }}
     />
   );

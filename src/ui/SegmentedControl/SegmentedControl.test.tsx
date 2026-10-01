@@ -52,4 +52,19 @@ describe('SegmentedControl', () => {
     expect(screen.getByText('Meal')).toHaveClass('visually-hidden');
     expect(screen.getByRole('group', { name: 'Meal' })).toBeInTheDocument();
   });
+
+  it('describes the group with its error', () => {
+    render(
+      <SegmentedControl
+        label="Meal"
+        options={OPTIONS}
+        value={undefined}
+        error="Choose a meal."
+        onChange={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole('group', { name: 'Meal' })).toHaveAccessibleDescription(
+      'Choose a meal.',
+    );
+  });
 });

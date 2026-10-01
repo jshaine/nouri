@@ -15,6 +15,7 @@ export interface SegmentedControlProps<T extends string> {
   onChange: (value: T) => void;
   /** Hide the legend visually (it stays for screen readers). */
   hideLabel?: boolean;
+  error?: string | undefined;
 }
 
 /** One-of-many choice built on native radios: arrow keys and forms work for free. */
@@ -24,10 +25,12 @@ export function SegmentedControl<T extends string>({
   value,
   onChange,
   hideLabel = false,
+  error,
 }: SegmentedControlProps<T>) {
   const name = useId();
+  const errorId = `${name}-error`;
   return (
-    <fieldset className={styles.group}>
+    <fieldset className={styles.group} aria-describedby={error ? errorId : undefined}>
       <legend className={hideLabel ? 'visually-hidden' : styles.legend}>{label}</legend>
       <div className={styles.track}>
         {options.map((option) => (
@@ -46,6 +49,11 @@ export function SegmentedControl<T extends string>({
           </label>
         ))}
       </div>
+      {error && (
+        <p id={errorId} className={styles.error}>
+          {error}
+        </p>
+      )}
     </fieldset>
   );
 }

@@ -61,7 +61,7 @@ IndexedDB on the device, and the food database ships as `public/foods.json`.
   (Features can't import `app`, and `data` has no React, so there is no shared
   context layer; explicit props also make container tests use real
   repositories on fake-indexeddb.)
-- Features: `onboarding` (first-run goal suggestion), `today` (Daily Facts
+- Features: `onboarding` (first run: about you, activity, goal, then a suggested plan), `today` (Daily Facts
   label, meals, date switcher, edit, delete + undo, backup reminder),
   `add-food` (Add sheet, custom food form), `food-detail` (portion, quantity,
   meal, Add to log), `goals` (goal editor), `weight`, `profile`, `history`
