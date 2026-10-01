@@ -78,8 +78,9 @@ export function useSuggestion(
       if (p) setPercents({ ...p.percents });
       setMessage(undefined);
     },
-    async onApply() {
-      if (state.kind !== 'ready') return;
+    /** Saves the suggestion as today's goal; resolves whether it saved. */
+    async onApply(): Promise<boolean> {
+      if (state.kind !== 'ready') return false;
       setApplying(true);
       try {
         await repo.setFrom(today, { ...state.result.goal, macroMode: 'percent', percents });
@@ -87,8 +88,10 @@ export function useSuggestion(
           kind: 'saved',
           text: 'Goals updated. They apply from today; past days keep theirs.',
         });
+        return true;
       } catch {
         setMessage({ kind: 'failed', text: APPLY_FAILED });
+        return false;
       } finally {
         setApplying(false);
       }

@@ -21,6 +21,10 @@ export interface SuggestionCardProps {
   onApply: () => void;
   applying?: boolean;
   message?: { kind: 'saved' | 'failed'; text: string } | undefined;
+  /** The apply button's label (default "Use these goals"). */
+  applyLabel?: string;
+  /** Offer the button even when the goals already match (e.g. to confirm in setup). */
+  alwaysApply?: boolean;
 }
 
 const PRESET_OPTIONS = MACRO_PRESETS.map((p) => ({
@@ -42,6 +46,8 @@ export function SuggestionCard({
   onApply,
   applying = false,
   message,
+  applyLabel = 'Use these goals',
+  alwaysApply = false,
 }: SuggestionCardProps) {
   if (state.kind === 'missing') {
     return <p className={styles.muted}>Add your {list(state.missing)} to see suggested goals.</p>;
@@ -113,11 +119,11 @@ export function SuggestionCard({
           {message.text}
         </p>
       )}
-      {matchesCurrent && !message ? (
+      {matchesCurrent && !message && !alwaysApply ? (
         <p className={styles.saved}>Your goals match this suggestion.</p>
       ) : (
         <Button variant="primary" block disabled={applying} onClick={onApply}>
-          {applying ? 'Saving…' : 'Use these goals'}
+          {applying ? 'Saving…' : applyLabel}
         </Button>
       )}
     </div>
