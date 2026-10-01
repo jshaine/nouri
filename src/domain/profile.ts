@@ -6,6 +6,7 @@ import type { UnitSystem } from './units';
 
 export interface Profile {
   sex?: Sex;
+  /** Exact, or set from an age (see birthDateForAge); the UI shows only the age. */
   birthDate?: LocalDate;
   heightCm?: number;
   goalWeightKg?: number;
@@ -28,7 +29,7 @@ export type MissingField =
 
 export const MISSING_LABEL: Readonly<Record<MissingField, string>> = {
   sex: 'sex',
-  birthDate: 'birth date',
+  birthDate: 'age',
   heightCm: 'height',
   goalWeightKg: 'goal weight',
   activity: 'activity level',

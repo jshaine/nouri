@@ -1,5 +1,5 @@
-import type { LocalDate } from './dates';
-import { parseBirthDate, parseBodyWeight, parseHeight } from './profileInput';
+import { ageOn, type LocalDate } from './dates';
+import { birthDateForAge, parseAge, parseBodyWeight, parseHeight } from './profileInput';
 
 describe('parseHeight', () => {
   it('reads centimeters', () => {
@@ -40,14 +40,36 @@ describe('parseBodyWeight', () => {
   });
 });
 
-describe('parseBirthDate', () => {
+describe('parseAge', () => {
   const today = '2026-09-30' as LocalDate;
-  it('accepts past dates and rejects future or invalid ones', () => {
-    expect(parseBirthDate('1996-05-01', today)).toEqual({ ok: true, value: '1996-05-01' });
-    expect(parseBirthDate('2027-01-01', today)).toEqual({
-      ok: false,
-      error: 'Your birth date can’t be in the future.',
+  it('turns an age into a birth date that gives that age today and grows yearly', () => {
+    const r = parseAge('30', today);
+    expect(r).toEqual({ ok: true, value: '1996-09-30' });
+    if (!r.ok) return;
+    expect(ageOn(r.value, today)).toBe(30);
+    expect(ageOn(r.value, '2027-09-29' as LocalDate)).toBe(30);
+    expect(ageOn(r.value, '2027-09-30' as LocalDate)).toBe(31);
+  });
+
+  it('keeps an exact birth date that already gives the age', () => {
+    expect(parseAge('30', today, '1996-05-01' as LocalDate)).toEqual({
+      ok: true,
+      value: '1996-05-01',
     });
-    expect(parseBirthDate('', today)).toEqual({ ok: false, error: 'Pick your birth date.' });
+    expect(parseAge('40', today, '1996-05-01' as LocalDate)).toEqual({
+      ok: true,
+      value: '1986-09-30',
+    });
+  });
+
+  it.each(['', 'abc', '12', '30.5', '121'])('%j → error', (text) => {
+    expect(parseAge(text, today)).toEqual({
+      ok: false,
+      error: 'Enter your age in years, like 30.',
+    });
+  });
+
+  it('moves Feb 29 to Feb 28 in years without it', () => {
+    expect(birthDateForAge(30, '2028-02-29' as LocalDate)).toBe('1998-02-28');
   });
 });

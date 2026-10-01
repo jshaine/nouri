@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { createTestRepositories, firstValue } from '@/data/testing';
@@ -24,13 +24,13 @@ function setup() {
 
 const next = (name = 'Next') => userEvent.click(screen.getByRole('button', { name }));
 
-/** Welcome → About you (female, 1996-05-01, 160 cm, 65 kg) → Lightly active → goal step. */
+/** Welcome → About you (female, 30, 160 cm, 65 kg) → Lightly active → goal step. */
 async function throughActivity() {
   await userEvent.click(await screen.findByRole('button', { name: 'Get started' }));
   expect(await screen.findByRole('heading', { name: 'About you' })).toBeInTheDocument();
   expect(screen.getByText('Step 2 of 5')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('radio', { name: 'Female' }));
-  fireEvent.change(screen.getByLabelText('Birth date'), { target: { value: '1996-05-01' } });
+  await userEvent.type(screen.getByLabelText('Age'), '30');
   await userEvent.type(screen.getByLabelText('Height'), '160');
   await userEvent.type(screen.getByLabelText('Current weight'), '65');
   await next();
@@ -57,7 +57,7 @@ describe('OnboardingContainer', () => {
     expect(screen.getAllByRole('button').every((b) => b.textContent.trim() !== '')).toBe(true);
     expect(await repos.profile.get()).toMatchObject({
       sex: 'female',
-      birthDate: '1996-05-01',
+      birthDate: '1996-09-30',
       heightCm: 160,
       activity: 'light',
       goalWeightKg: 58,
@@ -91,7 +91,7 @@ describe('OnboardingContainer', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Get started' }));
     await next();
     expect(screen.getByRole('group', { name: /Sex/ })).toHaveAccessibleDescription(/Choose/);
-    expect(screen.getByLabelText('Birth date')).toHaveAccessibleDescription(/Pick your birth date/);
+    expect(screen.getByLabelText('Age')).toHaveAccessibleDescription(/Enter your age in years/);
     expect(screen.getByLabelText('Current weight')).toHaveAccessibleDescription(/Enter a weight/);
     expect(screen.getByRole('heading', { name: 'About you' })).toBeInTheDocument();
 

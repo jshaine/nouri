@@ -105,7 +105,7 @@ describe('SuggestionContainer', () => {
     setup({ units: 'metric', exerciseCaloriesEnabled: false, heightCm: 160 }, 'none');
     expect(
       await screen.findByText(
-        'Add your sex, birth date, goal weight, activity level, weekly goal and current weight (log it below) to see suggested goals.',
+        'Add your sex, age, goal weight, activity level, weekly goal and current weight (log it below) to see suggested goals.',
       ),
     ).toBeInTheDocument();
   });

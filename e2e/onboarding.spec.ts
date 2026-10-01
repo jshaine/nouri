@@ -8,7 +8,7 @@ test('first launch: about you → activity → goal → plan → Today', async (
 
   await expect(page.getByRole('heading', { name: 'About you' })).toBeVisible();
   await page.getByRole('radio', { name: 'Female' }).check();
-  await page.getByLabel('Birth date').fill('1996-05-01');
+  await page.getByLabel('Age').fill('30');
   await page.getByLabel('Height').fill('160');
   await page.getByLabel('Current weight').fill('65');
   await page.getByRole('button', { name: 'Next' }).click();
