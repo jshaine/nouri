@@ -1,9 +1,10 @@
-import { isAfter, isLocalDate, type LocalDate } from './dates';
+import { ageOn, isLocalDate, type LocalDate } from './dates';
 import { parseDecimal } from './numbers';
 import { feetInchesToCm, lbToKg, type UnitSystem } from './units';
 
 export const HEIGHT_CM_RANGE = [100, 250] as const;
 export const WEIGHT_KG_RANGE = [30, 300] as const;
+export const AGE_RANGE = [13, 120] as const;
 
 type Parsed = { ok: true; value: number } | { ok: false; error: string };
 
@@ -50,11 +51,29 @@ export function parseBodyWeight(units: UnitSystem, text: string): Parsed {
   return { ok: true, value: round2(kg) };
 }
 
-export function parseBirthDate(
+/**
+ * The birth date the profile stores for someone who gave only their age: their
+ * age today, growing by one each year on today's date. Feb 29 falls back to Feb 28.
+ */
+export function birthDateForAge(age: number, today: LocalDate): LocalDate {
+  const [y, m, d] = today.split('-') as [string, string, string];
+  const date = `${String(Number(y) - age).padStart(4, '0')}-${m}-${d}`;
+  return isLocalDate(date) ? date : (`${date.slice(0, 8)}28` as LocalDate);
+}
+
+/**
+ * An age typed in years, as the birth date to store. When `current` (the stored
+ * birth date) already gives that age, it is kept, so an exact date isn't lost.
+ */
+export function parseAge(
   text: string,
   today: LocalDate,
+  current?: LocalDate,
 ): { ok: true; value: LocalDate } | { ok: false; error: string } {
-  if (!isLocalDate(text)) return { ok: false, error: 'Pick your birth date.' };
-  if (isAfter(text, today)) return { ok: false, error: 'Your birth date can’t be in the future.' };
-  return { ok: true, value: text };
+  const n = text.trim() === '' ? null : Number(text.trim());
+  const [min, max] = AGE_RANGE;
+  if (n === null || !Number.isInteger(n) || n < min || n > max)
+    return { ok: false, error: 'Enter your age in years, like 30.' };
+  if (current && ageOn(current, today) === n) return { ok: true, value: current };
+  return { ok: true, value: birthDateForAge(n, today) };
 }

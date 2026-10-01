@@ -23,7 +23,6 @@ export function ProfileDetailsContainer({
       drafts={form.drafts}
       errors={form.errors}
       paces={form.paces}
-      today={today}
       hasWeight={currentKg !== undefined}
       onEdit={form.edit}
       onCommit={(field) => {

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import type { ProfileRepository } from '@/data';
 import {
+  ageOn,
   cmToFeetInches,
   formatWeight,
   kgToLb,
   minimumGoalWeightKg,
-  parseBirthDate,
+  parseAge,
   parseBodyWeight,
   parseHeight,
   weeklyGoalOptions,
@@ -14,14 +15,14 @@ import {
   type WeeklyGoal,
 } from '@/domain';
 
-export type ProfileField = 'birthDate' | 'height' | 'goalWeight';
+export type ProfileField = 'age' | 'height' | 'goalWeight';
 
 const oneDecimal = (n: number) => String(Math.round(n * 10) / 10);
 
-function draftsFrom(p: Profile) {
+function draftsFrom(p: Profile, today: LocalDate) {
   const ftIn = p.heightCm === undefined ? undefined : cmToFeetInches(p.heightCm);
   return {
-    birthDate: p.birthDate ?? '',
+    age: p.birthDate ? String(ageOn(p.birthDate, today)) : '',
     cm: p.heightCm === undefined ? '' : oneDecimal(p.heightCm),
     ft: ftIn ? String(ftIn.feet) : '',
     in: ftIn ? String(ftIn.inches) : '',
@@ -42,7 +43,7 @@ export function useProfileForm(
   currentKg: number | undefined,
   today: LocalDate,
 ) {
-  const [drafts, setDrafts] = useState(() => draftsFrom(profile));
+  const [drafts, setDrafts] = useState(() => draftsFrom(profile, today));
   const [errors, setErrors] = useState<Partial<Record<ProfileField, string>>>({});
   // Show choices at once; the saved profile catches up through the live query.
   const [pending, setPending] = useState<Partial<Profile>>({});
@@ -69,8 +70,8 @@ export function useProfileForm(
       setDrafts((d) => ({ ...d, [field]: value }));
     },
     commit(field: ProfileField) {
-      if (field === 'birthDate') {
-        const r = parseBirthDate(drafts.birthDate, today);
+      if (field === 'age') {
+        const r = parseAge(drafts.age, today, profile.birthDate);
         fail(field, r.ok ? undefined : r.error);
         if (r.ok) save({ birthDate: r.value });
       } else if (field === 'height') {

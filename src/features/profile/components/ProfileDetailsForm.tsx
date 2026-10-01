@@ -1,5 +1,5 @@
 import { kgToLb, type Profile, type UnitSystem, type WeeklyGoal } from '@/domain';
-import { NumberField, SegmentedControl, SelectField, TextField } from '@/ui';
+import { NumberField, SegmentedControl, SelectField } from '@/ui';
 import { ActivityField } from './ActivityField';
 import { HeightField } from './HeightField';
 import styles from './Profile.module.css';
@@ -18,13 +18,12 @@ export function paceLabel(kg: WeeklyGoal, units: UnitSystem): string {
 
 export interface ProfileDetailsFormProps {
   profile: Profile;
-  drafts: { birthDate: string; cm: string; ft: string; in: string; goalWeight: string };
-  errors: Partial<Record<'birthDate' | 'height' | 'goalWeight', string>>;
+  drafts: { age: string; cm: string; ft: string; in: string; goalWeight: string };
+  errors: Partial<Record<'age' | 'height' | 'goalWeight', string>>;
   paces: readonly WeeklyGoal[];
-  today: string;
   hasWeight: boolean;
-  onEdit: (field: 'birthDate' | 'cm' | 'ft' | 'in' | 'goalWeight', value: string) => void;
-  onCommit: (field: 'birthDate' | 'height' | 'goalWeight') => void;
+  onEdit: (field: 'age' | 'cm' | 'ft' | 'in' | 'goalWeight', value: string) => void;
+  onCommit: (field: 'age' | 'height' | 'goalWeight') => void;
   onSex: (sex: 'female' | 'male') => void;
   onActivity: (level: NonNullable<Profile['activity']>) => void;
   onWeeklyGoal: (kg: WeeklyGoal) => void;
@@ -51,17 +50,17 @@ export function ProfileDetailsForm(props: ProfileDetailsFormProps) {
         value={profile.sex}
         onChange={props.onSex}
       />
-      <TextField
-        label="Birth date"
-        type="date"
-        max={props.today}
-        value={drafts.birthDate}
-        error={errors.birthDate}
+      <NumberField
+        label="Age"
+        unit="years"
+        inputMode="numeric"
+        value={drafts.age}
+        error={errors.age}
         onChange={(v) => {
-          onEdit('birthDate', v);
+          onEdit('age', v);
         }}
         onBlur={() => {
-          onCommit('birthDate');
+          onCommit('age');
         }}
       />
       <HeightField

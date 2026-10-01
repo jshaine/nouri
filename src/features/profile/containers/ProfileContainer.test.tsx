@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createTestRepositories } from '@/data/testing';
 import type { LocalDate } from '@/domain';
@@ -23,15 +23,14 @@ describe('ProfileContainer', () => {
   it('saves choices at once and typed fields when you leave them', async () => {
     const repos = setup();
     await userEvent.click(await screen.findByRole('radio', { name: 'Female' }));
-    fireEvent.change(screen.getByLabelText('Birth date'), { target: { value: '1996-05-01' } });
-    fireEvent.blur(screen.getByLabelText('Birth date'));
+    await typeAndLeave('Age', '30');
     await typeAndLeave('Height', '160');
     await typeAndLeave('Goal weight', '58');
     await userEvent.click(screen.getByRole('radio', { name: /Lightly active/ }));
     await waitFor(async () => {
       expect(await repos.profile.get()).toMatchObject({
         sex: 'female',
-        birthDate: '1996-05-01',
+        birthDate: '1996-09-30', // age 30 on 2026-09-30
         heightCm: 160,
         goalWeightKg: 58,
         activity: 'light',
