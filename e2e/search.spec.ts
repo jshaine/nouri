@@ -49,3 +49,21 @@ test('searches offline after the first visit', async ({ page, context, browserNa
     page.getByRole('list', { name: 'Search results' }).getByRole('button').first(),
   ).toContainText(/Egg/);
 });
+
+test('finds Philippine packaged products from their labels', async ({ page }) => {
+  await page.goto('/');
+  const search = await openSearch(page);
+  const first = page.getByRole('list', { name: 'Search results' }).getByRole('button').first();
+  await search.fill('san marino');
+  await expect(first).toContainText(/San Marino/);
+  await search.fill('gardenia');
+  await expect(first).toContainText(/Gardenia/);
+  await expect(first).toContainText('Label');
+  await first.click();
+  const detail = page.getByRole('dialog', { name: /Gardenia/ });
+  await expect(detail).toContainText('from the package label. Check it against your pack.');
+  await expect(detail.getByRole('region', { name: 'This amount' })).toContainText(/\d+ kcal/);
+
+  await page.goto('/settings');
+  await expect(page.getByText(/Open Food Facts/)).toBeVisible();
+});
