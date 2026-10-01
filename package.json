@@ -20,7 +20,8 @@
     "e2e": "playwright test",
     "ci": "npm run lint && npm run format:check && npm run typecheck && npm run test:coverage && npm run build && npm run e2e",
     "icons": "node scripts/generate-icons.ts",
-    "build:foods": "node --import ./scripts/ts-resolve.mjs scripts/build-foods.ts"
+    "build:foods": "node --import ./scripts/ts-resolve.mjs scripts/build-foods.ts",
+    "fetch:off": "node --import ./scripts/ts-resolve.mjs scripts/fetch-off.ts"
   },
   "dependencies": {
     "dexie": "^4.4.6",

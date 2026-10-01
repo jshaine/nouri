@@ -38,7 +38,7 @@ describe('buildFoodPack (USDA fixtures)', () => {
     ]);
     // Kale (no fat) and tap water (no macros) are skipped; the sub-sample is not a food.
     expect(report.skipped.missingMacros).toBe(2);
-    expect(report.counts).toEqual({ usda: 6, fnri: 0 });
+    expect(report.counts).toEqual({ usda: 6, fnri: 0, off: 0 });
   });
 
   it('uses kcal 1008, then Atwater 2047/2048 for Foundation, then 4P + 4C + 9F', async () => {
@@ -83,7 +83,9 @@ describe('buildFoodPack (USDA fixtures)', () => {
     expect(pack.generatedAt).toBe('2026-09-30T00:00:00.000Z');
     expect(report.gzipBytes).toBeLessThan(report.bytes);
     expect(report.overBudget).toBe(false);
-    expect(formatReport(report)).toMatch(/Foods: 6 \(USDA 6, FNRI 0\)[\s\S]*gzip$/);
+    expect(formatReport(report)).toMatch(
+      /Foods: 6 \(USDA 6, FNRI 0, Open Food Facts 0\)[\s\S]*gzip$/,
+    );
   });
 
   it('skips FNRI when there is no CSV, and says so', async () => {
@@ -117,6 +119,46 @@ describe('buildFoodPack (USDA fixtures)', () => {
     writeFileSync(fnriOutFile, '{}');
     await buildFoodPack({ usdaDir: FIXTURES, outFile: join(dir, 'foods.json'), fnriOutFile });
     expect(existsSync(fnriOutFile)).toBe(false);
+  });
+
+  it('writes usable Open Food Facts products to foods-ph.json, with the credit', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'nouri-foods-'));
+    const offFile = join(dir, 'philippines.json');
+    const offOutFile = join(dir, 'foods-ph.json');
+    const nutriments = {
+      'energy-kcal_100g': 166,
+      proteins_100g: 12.5,
+      carbohydrates_100g: 8.9,
+      fat_100g: 8.9,
+    };
+    writeFileSync(
+      offFile,
+      JSON.stringify({
+        products: [
+          { code: '1', product_name: 'Corned Tuna', brands: 'San Marino', nutriments },
+          {
+            code: '2',
+            product_name: 'Juice',
+            brands: 'X',
+            product_quantity_unit: 'ml',
+            nutriments,
+          },
+        ],
+      }),
+    );
+    const report = await buildFoodPack({
+      usdaDir: FIXTURES,
+      outFile: join(dir, 'foods.json'),
+      offFile,
+      offOutFile,
+    });
+    const pack = JSON.parse(readFileSync(offOutFile, 'utf8')) as FoodPack;
+    expect(decodeFoodPack(pack).foods.map((f) => [f.key, f.name])).toEqual([
+      ['off:1', 'San Marino Corned Tuna'],
+    ]);
+    expect(pack.sources.off).toMatch(/Open Food Facts.*ODbL/);
+    expect(report.counts.off).toBe(1);
+    expect(formatReport(report)).toMatch(/Open Food Facts skipped: 1 liquid/);
   });
 
   it('explains where to get the data when it is missing', async () => {

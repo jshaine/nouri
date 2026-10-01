@@ -3,7 +3,8 @@ import type { FoodSource } from './macros';
 
 /**
  * public/foods.json: the bundled food database, compact so it stays small
- * over the wire. Every bundled food is per 100 g. Written by
+ * over the wire. Every bundled food is per 100 g (a drink's label is per
+ * 100 ml, so only products sold by weight are bundled). Written by
  * scripts/build-foods.ts, read (and validated) by the app.
  */
 export const FOOD_PACK_VERSION = 1;
@@ -31,7 +32,12 @@ export interface FoodPack {
   sources: Partial<Record<Exclude<FoodSource, 'custom'>, string>>;
   usda: PackedFood[];
   fnri: PackedFood[];
+  /** Open Food Facts products (ODbL), in their own file; absent in older packs. */
+  off?: PackedFood[];
 }
+
+type PackedSource = Exclude<FoodSource, 'custom'>;
+const PACKED_SOURCES: readonly PackedSource[] = ['usda', 'fnri', 'off'];
 
 export class FoodPackError extends Error {
   override name = 'FoodPackError';
@@ -40,7 +46,7 @@ export class FoodPackError extends Error {
 const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const isStr = (v: unknown): v is string => typeof v === 'string';
 
-function decodeFood(raw: unknown, source: 'usda' | 'fnri'): Food | null {
+function decodeFood(raw: unknown, source: PackedSource): Food | null {
   if (!Array.isArray(raw)) return null;
   const [id, name, kcal, p, c, f, fiber, portions, aliases] = raw as unknown[];
   if (!isStr(id) || !isStr(name) || ![kcal, p, c, f].every(isNum)) return null;
@@ -82,7 +88,7 @@ export function decodeFoodPack(json: unknown): {
     throw new FoodPackError(`Unsupported food database version: ${String(pack.v)}.`);
   const foods: Food[] = [];
   let skipped = 0;
-  for (const source of ['usda', 'fnri'] as const) {
+  for (const source of PACKED_SOURCES) {
     const list = pack[source];
     if (!Array.isArray(list)) continue;
     for (const raw of list) {
@@ -94,7 +100,8 @@ export function decodeFoodPack(json: unknown): {
   const sources: FoodPack['sources'] = {};
   if (typeof pack.sources === 'object' && pack.sources !== null) {
     for (const [k, v] of Object.entries(pack.sources)) {
-      if ((k === 'usda' || k === 'fnri') && isStr(v)) sources[k] = v;
+      if ((PACKED_SOURCES as readonly string[]).includes(k) && isStr(v))
+        sources[k as PackedSource] = v;
     }
   }
   return { foods, sources, skipped };

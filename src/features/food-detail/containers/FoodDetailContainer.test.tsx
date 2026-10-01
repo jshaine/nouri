@@ -138,6 +138,9 @@ describe('basisNote', () => {
     expect(basisNote({ ...adobo, basis: { kind: 'serving', servingGrams: 180 } })).toBe(
       'Nutrition per serving (180 g)',
     );
+    expect(basisNote({ ...rice, source: 'off' })).toBe(
+      'Per 100 g, from the package label. Check it against your pack.',
+    );
   });
 });
 

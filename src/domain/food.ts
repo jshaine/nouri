@@ -8,7 +8,7 @@ export function foodKey(source: FoodSource, id: string): FoodKey {
 }
 
 export function parseFoodKey(key: string): { source: FoodSource; id: string } | null {
-  const match = /^(usda|fnri|custom):(.+)$/.exec(key);
+  const match = /^(usda|fnri|off|custom):(.+)$/.exec(key);
   if (!match?.[1] || !match[2]) return null;
   return { source: match[1] as FoodSource, id: match[2] };
 }

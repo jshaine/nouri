@@ -81,6 +81,7 @@ export default function UiGallery() {
         <div className={styles.row}>
           <SourceBadge source="usda" />
           <SourceBadge source="fnri" />
+          <SourceBadge source="off" />
           <SourceBadge source="custom" />
         </div>
       </section>

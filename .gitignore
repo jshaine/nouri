@@ -14,6 +14,8 @@ data/raw/usda/*
 !data/raw/usda/README.md
 data/raw/fnri/*
 !data/raw/fnri/README.md
+data/raw/off/*
+!data/raw/off/README.md
 # Built from FNRI data (copyrighted, used with permission): never commit
 public/foods-fnri.json
 *.tsbuildinfo

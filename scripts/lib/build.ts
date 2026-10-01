@@ -1,10 +1,11 @@
 import { existsSync } from 'node:fs';
-import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { FOOD_PACK_VERSION, type FoodPack, type PackedFood } from '../../src/domain/index.ts';
 import { aliasesFor } from './aliases.ts';
 import { FNRI_CREDIT, readFnriFile } from './fnri.ts';
+import { OFF_CREDIT, packOffProducts, type OffSkip } from './off.ts';
 import { packUsdaFood, readUsdaDataset, type DatasetKind } from './usda.ts';
 
 export const USDA_CREDIT = 'USDA FoodData Central (Foundation Foods and SR Legacy), public domain';
@@ -23,11 +24,17 @@ export interface BuildOptions {
    * copyrighted and the repository is public.
    */
   fnriOutFile?: string;
+  /** Optional Open Food Facts download (npm run fetch:off). */
+  offFile?: string;
+  /** Open Food Facts foods (ODbL, attributed): committed, in their own file. */
+  offOutFile?: string;
   now?: () => Date;
 }
 
 export interface BuildReport {
-  counts: { usda: number; fnri: number };
+  counts: { usda: number; fnri: number; off: number };
+  /** null when no Open Food Facts download was found. */
+  off: { skipped: Partial<Record<OffSkip, number>> } | null;
   /** null when no FNRI file was found. */
   fnri: { problems: string[] } | null;
   skipped: { missingMacros: number; duplicateNames: number };
@@ -100,29 +107,55 @@ export async function buildFoodPack(opts: BuildOptions): Promise<BuildReport> {
     await rm(opts.fnriOutFile, { force: true }); // no stale FNRI file after removing the CSV
   }
 
-  const gzipBytes =
-    gzipSync(usdaJson, { level: 9 }).byteLength +
-    (fnriJson ? gzipSync(fnriJson, { level: 9 }).byteLength : 0);
+  const off = opts.offFile && existsSync(opts.offFile) ? await readOffFile(opts.offFile) : null;
+  let offJson = '';
+  if (off && opts.offOutFile) {
+    offJson = await write(opts.offOutFile, {
+      v: FOOD_PACK_VERSION,
+      generatedAt,
+      sources: { off: OFF_CREDIT },
+      usda: [],
+      fnri: [],
+      off: [...off.foods].sort(byName),
+    });
+  }
+
+  const files = [usdaJson, fnriJson, offJson].filter(Boolean);
+  const gzipBytes = files.reduce((sum, f) => sum + gzipSync(f, { level: 9 }).byteLength, 0);
   return {
-    counts: { usda: usda.length, fnri: fnri?.foods.length ?? 0 },
+    counts: { usda: usda.length, fnri: fnri?.foods.length ?? 0, off: off?.foods.length ?? 0 },
     fnri: fnri && { problems: fnri.problems },
+    off: off && { skipped: off.skipped },
     skipped,
     datasets,
-    bytes: Buffer.byteLength(usdaJson) + Buffer.byteLength(fnriJson),
+    bytes: files.reduce((sum, f) => sum + Buffer.byteLength(f), 0),
     gzipBytes,
     overBudget: gzipBytes > GZIP_BUDGET_BYTES,
   };
+}
+
+async function readOffFile(file: string) {
+  const json = JSON.parse(await readFile(file, 'utf8')) as { products?: unknown };
+  if (!Array.isArray(json.products)) throw new Error(`${file} has no "products" list.`);
+  return packOffProducts(json.products);
 }
 
 export function formatReport(r: BuildReport): string {
   const kb = (n: number) => `${(n / 1024).toFixed(1)} KB`;
   return [
     `USDA datasets: ${r.datasets.join(', ')}`,
-    `Foods: ${r.counts.usda + r.counts.fnri} (USDA ${r.counts.usda}, FNRI ${r.counts.fnri})`,
+    `Foods: ${r.counts.usda + r.counts.fnri + r.counts.off} (USDA ${r.counts.usda}, FNRI ${r.counts.fnri}, Open Food Facts ${r.counts.off})`,
     `Skipped: ${r.skipped.missingMacros} missing protein/fat/carbs, ${r.skipped.duplicateNames} duplicate names`,
     r.fnri
       ? `FNRI: ${r.counts.fnri} foods${r.fnri.problems.length ? `, ${r.fnri.problems.length} problem(s):\n  ${r.fnri.problems.join('\n  ')}` : ''}`
       : 'FNRI: data/raw/fnri/philfct.csv not found, skipped (see data/raw/fnri/README.md)',
+    r.off
+      ? `Open Food Facts skipped: ${
+          Object.entries(r.off.skipped)
+            .map(([why, n]) => `${n} ${why}`)
+            .join(', ') || 'none'
+        }`
+      : 'Open Food Facts: data/raw/off/philippines.json not found, kept the committed foods-ph.json (npm run fetch:off)',
     `Size: ${kb(r.bytes)} raw, ${kb(r.gzipBytes)} gzip${r.overBudget ? '  ⚠ over the 1.5 MB budget' : ''}`,
   ].join('\n');
 }

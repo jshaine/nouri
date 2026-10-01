@@ -4,4 +4,5 @@ coverage
 playwright-report
 test-results
 public/foods.json
+public/foods-ph.json
 package-lock.json
