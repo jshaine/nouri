@@ -18,57 +18,6 @@
   font-weight: var(--weight-bold);
 }
 
-.hint {
-  color: var(--color-ink-muted);
-  font-size: var(--text-xs);
-}
-
-.cards {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.card {
-  position: relative;
-  display: flex;
-  min-height: var(--tap-min);
-  border: var(--rule-hair) solid var(--color-ink-muted);
-  border-radius: var(--radius-md);
-  background: var(--color-card);
-  cursor: pointer;
-}
-
-.card:has(.radio:checked) {
-  border: var(--label-border) solid var(--color-ink);
-}
-
-.card:has(.radio:focus-visible) {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
-}
-
-.radio {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.cardText {
-  display: grid;
-  gap: 2px;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-sm);
-}
-
-.cardText span {
-  color: var(--color-ink-muted);
-}
-
-/* Checked is shown by the heavier border and a check mark, not color alone. */
-.card:has(.radio:checked) .cardText b::after {
-  content: ' ✓';
-}
-
 .pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

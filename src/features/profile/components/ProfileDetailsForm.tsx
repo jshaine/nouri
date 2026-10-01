@@ -1,6 +1,7 @@
 import { kgToLb, type Profile, type UnitSystem, type WeeklyGoal } from '@/domain';
 import { NumberField, SegmentedControl, SelectField, TextField } from '@/ui';
 import { ActivityField } from './ActivityField';
+import { HeightField } from './HeightField';
 import styles from './Profile.module.css';
 
 const SEX_OPTIONS = [
@@ -63,50 +64,15 @@ export function ProfileDetailsForm(props: ProfileDetailsFormProps) {
           onCommit('birthDate');
         }}
       />
-      {metric ? (
-        <NumberField
-          label="Height"
-          unit="cm"
-          value={drafts.cm}
-          error={errors.height}
-          onChange={(v) => {
-            onEdit('cm', v);
-          }}
-          onBlur={() => {
-            onCommit('height');
-          }}
-        />
-      ) : (
-        <fieldset className={styles.fieldset}>
-          <legend className={styles.legend}>Height</legend>
-          <div className={styles.pair}>
-            <NumberField
-              label="Feet"
-              unit="ft"
-              inputMode="numeric"
-              value={drafts.ft}
-              onChange={(v) => {
-                onEdit('ft', v);
-              }}
-              onBlur={() => {
-                onCommit('height');
-              }}
-            />
-            <NumberField
-              label="Inches"
-              unit="in"
-              value={drafts.in}
-              error={errors.height}
-              onChange={(v) => {
-                onEdit('in', v);
-              }}
-              onBlur={() => {
-                onCommit('height');
-              }}
-            />
-          </div>
-        </fieldset>
-      )}
+      <HeightField
+        units={profile.units}
+        drafts={drafts}
+        error={errors.height}
+        onEdit={onEdit}
+        onBlur={() => {
+          onCommit('height');
+        }}
+      />
       <NumberField
         label="Goal weight"
         unit={metric ? 'kg' : 'lb'}
