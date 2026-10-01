@@ -1,6 +1,7 @@
 /**
- * Builds public/foods.json from the USDA (and, if present, FNRI) raw data.
- * Run: npm run build:foods. See data/raw/usda/README.md for the downloads.
+ * Builds public/foods.json from the USDA raw data, plus foods-fnri.json and
+ * foods-ph.json (Open Food Facts) when those downloads are present.
+ * Run: npm run build:foods. Each data/raw folder has a README for its download.
  */
 import { fileURLToPath } from 'node:url';
 import { buildFoodPack, formatReport } from './lib/build.ts';
@@ -13,6 +14,8 @@ try {
     outFile: `${root}public/foods.json`,
     fnriFile: `${root}data/raw/fnri/philfct.csv`,
     fnriOutFile: `${root}public/foods-fnri.json`,
+    offFile: `${root}data/raw/off/philippines.json`,
+    offOutFile: `${root}public/foods-ph.json`,
   });
   console.log(formatReport(report));
   if (report.overBudget) process.exitCode = 1;
